@@ -65,6 +65,17 @@ int UDP_Init(void)
         return -1;
     }
 
+#ifdef _WIN32
+    {
+        WSADATA wsaData;
+        int err = WSAStartup(MAKEWORD(2, 2), &wsaData);
+        if (err != 0) {
+            Con_Printf("WSAStartup failed with error: %d\n", err);
+            return -1;
+        }
+    }
+#endif
+
     // determine my name & address
     gethostname(buff, MAXHOSTNAMELEN);
     local = gethostbyname(buff);
@@ -103,6 +114,9 @@ void UDP_Shutdown(void)
 {
     UDP_Listen(false);
     UDP_CloseSocket(net_controlsocket);
+#ifdef _WIN32
+    WSACleanup();
+#endif
 }
 
 //=============================================================================

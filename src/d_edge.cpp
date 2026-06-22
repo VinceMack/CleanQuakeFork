@@ -199,7 +199,7 @@ void D_DrawSurfaces(void)
                 D_DrawSolidSurface(s, (int)r_clearcolor.value & 0xFF);
                 D_DrawZSpans(s->spans);
             } else if (s->flags & SURF_DRAWTURB) {
-                pface = s->data;
+                pface = (msurface_t*)s->data;
                 miplevel = 0;
                 cacheblock = (pixel_t*)((byte*)pface->texinfo->texture + pface->texinfo->texture->offsets[0]);
                 cachewidth = 64;
@@ -247,7 +247,7 @@ void D_DrawSurfaces(void)
                                       // make entity passed in
                 }
 
-                pface = s->data;
+                pface = (msurface_t*)s->data;
                 miplevel = D_MipLevelForScale(s->nearzi * scale_for_mip * pface->texinfo->mipadjust);
 
                 // FIXME: make this passed in to D_CacheSurface

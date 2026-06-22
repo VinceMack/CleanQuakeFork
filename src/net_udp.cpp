@@ -140,7 +140,7 @@ int UDP_OpenSocket(int port)
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(port);
-    if (bind(newsocket, (void*)&address, sizeof(address)) == -1) {
+    if (bind(newsocket, (struct sockaddr*)&address, sizeof(address)) == -1) {
         goto ErrorReturn;
     }
 
@@ -261,7 +261,7 @@ int UDP_Read(int socket, byte* buf, int len, struct qsockaddr* addr)
     int addrlen = sizeof(struct qsockaddr);
     int ret;
 
-    ret = recvfrom(socket, buf, len, 0, (struct sockaddr*)addr, &addrlen);
+    ret = recvfrom(socket, (char*)buf, len, 0, (struct sockaddr*)addr, &addrlen);
     if (ret == -1 && (errno == EWOULDBLOCK || errno == ECONNREFUSED)) {
         return 0;
     }
@@ -313,7 +313,7 @@ int UDP_Write(int socket, byte* buf, int len, struct qsockaddr* addr)
 {
     int ret;
 
-    ret = sendto(socket, buf, len, 0, (struct sockaddr*)addr,
+    ret = sendto(socket, (const char*)buf, len, 0, (struct sockaddr*)addr,
         sizeof(struct qsockaddr));
     if (ret == -1 && errno == EWOULDBLOCK) {
         return 0;

@@ -269,7 +269,7 @@ char* PR_ValueString(etype_t type, eval_t* val)
     ddef_t* def;
     dfunction_t* f;
 
-    type &= ~DEF_SAVEGLOBAL;
+    type = (etype_t)(type & ~DEF_SAVEGLOBAL);
 
     switch (type) {
     case ev_string:
@@ -321,7 +321,7 @@ char* PR_UglyValueString(etype_t type, eval_t* val)
     ddef_t* def;
     dfunction_t* f;
 
-    type &= ~DEF_SAVEGLOBAL;
+    type = (etype_t)(type & ~DEF_SAVEGLOBAL);
 
     switch (type) {
     case ev_string:
@@ -376,7 +376,7 @@ char* PR_GlobalString(int ofs)
     if (!def) {
         sprintf(line, "%i(??? unknown)", ofs);
     } else {
-        s = PR_ValueString(def->type, val);
+        s = PR_ValueString((etype_t)def->type, (eval_t*)val);
         sprintf(line, "%i(%s)%s", ofs, PR_GetString(def->s_name), s);
     }
 
@@ -461,7 +461,7 @@ void ED_Print(edict_t* ed)
             Con_Printf(" ");
         }
 
-        Con_Printf("%s\n", PR_ValueString(d->type, (eval_t*)v));
+        Con_Printf("%s\n", PR_ValueString((etype_t)d->type, (eval_t*)v));
     }
 }
 
@@ -509,7 +509,7 @@ void ED_Write(FILE* f, edict_t* ed)
         }
 
         fprintf(f, "\"%s\" ", name);
-        fprintf(f, "\"%s\"\n", PR_UglyValueString(d->type, (eval_t*)v));
+        fprintf(f, "\"%s\"\n", PR_UglyValueString((etype_t)d->type, (eval_t*)v));
     }
 
     fprintf(f, "}\n");
@@ -637,7 +637,7 @@ void ED_WriteGlobals(FILE* f)
         name = PR_GetString(def->s_name);
         fprintf(f, "\"%s\" ", name);
         fprintf(f, "\"%s\"\n",
-            PR_UglyValueString(type, (eval_t*)&pr_globals[def->ofs]));
+            PR_UglyValueString((etype_t)type, (eval_t*)&pr_globals[def->ofs]));
     }
     fprintf(f, "}\n");
 }

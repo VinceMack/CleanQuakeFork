@@ -325,8 +325,8 @@ void R_DrawSurfaceBlock8_mip0(void)
     int v, i, b, lightstep, lighttemp, light;
     unsigned char pix, *psource, *prowdest;
 
-    psource = pbasesource;
-    prowdest = prowdestbase;
+    psource = (unsigned char*)pbasesource;
+    prowdest = (unsigned char*)prowdestbase;
 
     for (v = 0; v < r_numvblocks; v++) {
         // FIXME: make these locals?
@@ -371,8 +371,8 @@ void R_DrawSurfaceBlock8_mip1(void)
     int v, i, b, lightstep, lighttemp, light;
     unsigned char pix, *psource, *prowdest;
 
-    psource = pbasesource;
-    prowdest = prowdestbase;
+    psource = (unsigned char*)pbasesource;
+    prowdest = (unsigned char*)prowdestbase;
 
     for (v = 0; v < r_numvblocks; v++) {
         // FIXME: make these locals?
@@ -417,8 +417,8 @@ void R_DrawSurfaceBlock8_mip2(void)
     int v, i, b, lightstep, lighttemp, light;
     unsigned char pix, *psource, *prowdest;
 
-    psource = pbasesource;
-    prowdest = prowdestbase;
+    psource = (unsigned char*)pbasesource;
+    prowdest = (unsigned char*)prowdestbase;
 
     for (v = 0; v < r_numvblocks; v++) {
         // FIXME: make these locals?
@@ -463,8 +463,8 @@ void R_DrawSurfaceBlock8_mip3(void)
     int v, i, b, lightstep, lighttemp, light;
     unsigned char pix, *psource, *prowdest;
 
-    psource = pbasesource;
-    prowdest = prowdestbase;
+    psource = (unsigned char*)pbasesource;
+    prowdest = (unsigned char*)prowdestbase;
 
     for (v = 0; v < r_numvblocks; v++) {
         // FIXME: make these locals?

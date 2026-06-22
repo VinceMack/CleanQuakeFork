@@ -31,7 +31,7 @@ int menu_numcachepics;
 
 qpic_t* Draw_PicFromWad(char* name)
 {
-    return W_GetLumpName(name);
+    return (qpic_t*)W_GetLumpName(name);
 }
 
 /*
@@ -88,9 +88,9 @@ Draw_Init
 */
 void Draw_Init(void)
 {
-    draw_chars = W_GetLumpName("conchars");
-    draw_disc = W_GetLumpName("disc");
-    draw_backtile = W_GetLumpName("backtile");
+    draw_chars = (byte*)W_GetLumpName("conchars");
+    draw_disc = (qpic_t*)W_GetLumpName("disc");
+    draw_backtile = (qpic_t*)W_GetLumpName("backtile");
 
     r_rectdesc.width = draw_backtile->width;
     r_rectdesc.height = draw_backtile->height;

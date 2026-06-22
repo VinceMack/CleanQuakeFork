@@ -181,7 +181,7 @@ void S_Init(void)
     // create a piece of DMA memory
 
     if (fakedma) {
-        shm = (void*)Hunk_AllocName(sizeof(*shm), "shm");
+        shm = (volatile dma_t*)(void*)Hunk_AllocName(sizeof(*shm), "shm");
         shm->splitbuffer = 0;
         shm->samplebits = 16;
         shm->speed = 22050;

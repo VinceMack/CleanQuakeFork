@@ -118,7 +118,7 @@ void Z_Free(void* ptr)
 Z_Malloc
 ========================
 */
-void* Z_Malloc(int size)
+ReturnVoidPtr Z_Malloc(int size)
 {
     Z_CheckHeap(); // Debug check
 
@@ -132,7 +132,7 @@ void* Z_Malloc(int size)
     return buffer;
 }
 
-void* Z_Realloc(void* ptr, int new_size)
+ReturnVoidPtr Z_Realloc(void* ptr, int new_size)
 {
     // Handle null pointer like malloc
     if (!ptr) {
@@ -180,10 +180,10 @@ void* Z_Realloc(void* ptr, int new_size)
     return ptr;
 }
 
-void* Z_TagMalloc(int size, int tag)
+ReturnVoidPtr Z_TagMalloc(int size, int tag)
 {
     int extra;
-    memblock_t *start, *rover, *new, *base;
+    memblock_t *start, *rover, *new_block, *base;
 
     if (!tag) {
         Sys_Error("Z_TagMalloc: tried to use a 0 tag");
@@ -217,14 +217,14 @@ void* Z_TagMalloc(int size, int tag)
     //
     extra = base->size - size;
     if (extra > MINFRAGMENT) { // there will be a free fragment after the allocated block
-        new = (memblock_t*)((byte*)base + size);
-        new->size = extra;
-        new->tag = 0; // free block
-        new->prev = base;
-        new->id = ZONEID;
-        new->next = base->next;
-        new->next->prev = new;
-        base->next = new;
+        new_block = (memblock_t*)((byte*)base + size);
+        new_block->size = extra;
+        new_block->tag = 0; // free block
+        new_block->prev = base;
+        new_block->id = ZONEID;
+        new_block->next = base->next;
+        new_block->next->prev = new_block;
+        base->next = new_block;
         base->size = size;
     }
 
@@ -441,7 +441,7 @@ void Hunk_Print(qboolean all)
 Hunk_AllocName
 ===================
 */
-void* Hunk_AllocName(int size, char* name)
+ReturnVoidPtr Hunk_AllocName(int size, char* name)
 {
     hunk_t* h;
 
@@ -478,7 +478,7 @@ void* Hunk_AllocName(int size, char* name)
 Hunk_Alloc
 ===================
 */
-void* Hunk_Alloc(int size)
+ReturnVoidPtr Hunk_Alloc(int size)
 {
     return Hunk_AllocName(size, "unknown");
 }
@@ -528,7 +528,7 @@ void Hunk_FreeToHighMark(int mark)
 Hunk_HighAllocName
 ===================
 */
-void* Hunk_HighAllocName(int size, char* name)
+ReturnVoidPtr Hunk_HighAllocName(int size, char* name)
 {
     hunk_t* h;
 
@@ -573,7 +573,7 @@ Hunk_TempAlloc
 Return space from the top of the hunk
 =================
 */
-void* Hunk_TempAlloc(int size)
+ReturnVoidPtr Hunk_TempAlloc(int size)
 {
     void* buf;
 
@@ -620,18 +620,18 @@ Cache_Move
 */
 void Cache_Move(cache_system_t* c)
 {
-    cache_system_t* new;
+    cache_system_t* new_sys;
 
     // we are clearing up space at the bottom, so only allocate it late
-    new = Cache_TryAlloc(c->size, true);
-    if (new) {
-        //		Con_Printf ("cache_move ok\n");
-
-        Q_memcpy(new + 1, c + 1, c->size - sizeof(cache_system_t));
-        new->user = c->user;
-        Q_memcpy(new->name, c->name, sizeof(new->name));
+    new_sys = (cache_system_t*)(void*)Cache_TryAlloc(c->size, true);
+    if (new_sys) {
+        // copy from old to new
+        //
+        Q_memcpy(new_sys + 1, c + 1, c->size - sizeof(cache_system_t));
+        new_sys->user = c->user;
+        Q_memcpy(new_sys->name, c->name, sizeof(new_sys->name));
         Cache_Free(c->user);
-        new->user->data = (void*)(new + 1);
+        new_sys->user->data = (void*)(new_sys + 1);
     } else {
         //		Con_Printf ("cache_move failed\n");
 
@@ -729,7 +729,7 @@ Size should already include the header and padding
 */
 cache_system_t* Cache_TryAlloc(int size, qboolean nobottom)
 {
-    cache_system_t *cs, *new;
+    cache_system_t *cs, *new_cs;
 
     // is the cache completely empty?
 
@@ -738,59 +738,61 @@ cache_system_t* Cache_TryAlloc(int size, qboolean nobottom)
             Sys_Error("Cache_TryAlloc: %i is greater then free hunk", size);
         }
 
-        new = (cache_system_t*)(hunk_base + hunk_low_used);
-        memset(new, 0, sizeof(*new));
-        new->size = size;
+        new_cs = (cache_system_t*)(hunk_base + hunk_low_used);
+        memset(new_cs, 0, sizeof(*new_cs));
+        new_cs->size = size;
 
-        cache_head.prev = cache_head.next = new;
-        new->prev = new->next = &cache_head;
+        cache_head.prev = cache_head.next = new_cs;
+        new_cs->prev = new_cs->next = &cache_head;
 
-        Cache_MakeLRU(new);
+        Cache_MakeLRU(new_cs);
 
-        return new;
+        return new_cs;
     }
 
     // search from the bottom up for space
 
-    new = (cache_system_t*)(hunk_base + hunk_low_used);
+    new_cs = (cache_system_t*)(hunk_base + hunk_low_used);
     cs = cache_head.next;
 
-    do {
-        if (!nobottom || cs != cache_head.next) {
-            if ((byte*)cs - (byte*)new >= size) { // found space
-                memset(new, 0, sizeof(*new));
-                new->size = size;
+    while (1) {
+        if (cs == &cache_head || (byte*)cs > (byte*)new_cs) { // clear up to the end
+            if ((byte*)cs - (byte*)new_cs >= size) {
+                memset(new_cs, 0, sizeof(*new_cs));
+                new_cs->size = size;
 
-                new->next = cs;
-                new->prev = cs->prev;
-                cs->prev->next = new;
-                cs->prev = new;
+                new_cs->next = cs;
+                new_cs->prev = cs->prev;
+                cs->prev->next = new_cs;
+                cs->prev = new_cs;
 
-                Cache_MakeLRU(new);
+                Cache_MakeLRU(new_cs);
 
-                return new;
+                return new_cs;
             }
         }
 
         // continue looking
-        new = (cache_system_t*)((byte*)cs + cs->size);
+        new_cs = (cache_system_t*)((byte*)cs + cs->size);
         cs = cs->next;
 
-    } while (cs != &cache_head);
+        if (cs == &cache_head)
+            break;
+    }
 
     // try to allocate one at the very end
-    if (hunk_base + hunk_size - hunk_high_used - (byte*)new >= size) {
-        memset(new, 0, sizeof(*new));
-        new->size = size;
+    if (hunk_base + hunk_size - hunk_high_used - (byte*)new_cs >= size) {
+        memset(new_cs, 0, sizeof(*new_cs));
+        new_cs->size = size;
 
-        new->next = &cache_head;
-        new->prev = cache_head.prev;
-        cache_head.prev->next = new;
-        cache_head.prev = new;
+        new_cs->next = &cache_head;
+        new_cs->prev = cache_head.prev;
+        cache_head.prev->next = new_cs;
+        cache_head.prev = new_cs;
 
-        Cache_MakeLRU(new);
+        Cache_MakeLRU(new_cs);
 
-        return new;
+        return new_cs;
     }
 
     return NULL; // couldn't allocate
@@ -893,7 +895,7 @@ void Cache_Free(cache_user_t* c)
 Cache_Check
 ==============
 */
-void* Cache_Check(cache_user_t* c)
+ReturnVoidPtr Cache_Check(cache_user_t* c)
 {
     cache_system_t* cs;
 
@@ -915,7 +917,7 @@ void* Cache_Check(cache_user_t* c)
 Cache_Alloc
 ==============
 */
-void* Cache_Alloc(cache_user_t* c, int size, char* name)
+ReturnVoidPtr Cache_Alloc(cache_user_t* c, int size, char* name)
 {
     cache_system_t* cs;
 
@@ -963,7 +965,7 @@ void Memory_Init(void* buf, int size)
     int p;
     int zonesize = DYNAMIC_SIZE;
 
-    hunk_base = buf;
+    hunk_base = (byte*)buf;
     hunk_size = size;
     hunk_low_used = 0;
     hunk_high_used = 0;

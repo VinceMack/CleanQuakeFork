@@ -209,7 +209,7 @@ int Sys_FileRead(int handle, void* dst, int count)
 
     size = 0;
     if (handle >= 0) {
-        data = dst;
+        data = (char*)dst;
         while (count > 0) {
             done = fread(data, 1, count, sys_handles[handle]);
             if (done == 0) {
@@ -232,7 +232,7 @@ int Sys_FileWrite(int handle, void* src, int count)
 
     size = 0;
     if (handle >= 0) {
-        data = src;
+        data = (char*)src;
         while (count > 0) {
             done = fread(data, 1, count, sys_handles[handle]);
             if (done == 0) {
@@ -317,7 +317,7 @@ byte* Sys_ZoneBase(int* size)
         }
     }
 
-    return malloc(*size);
+    return (byte*)malloc(*size);
 }
 
 void Sys_LineRefresh(void)
@@ -344,7 +344,7 @@ int main(int c, char** v)
     double time, oldtime, newtime;
     quakeparms_t parms;
     extern int vcrFile;
-    extern int recording;
+    extern qboolean recording;
     static int frame;
 
     moncontrol(0);

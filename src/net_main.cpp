@@ -957,7 +957,7 @@ void NET_Poll(void)
         }
 
         pollProcedureList = pp->next;
-        pp->procedure(pp->arg);
+        ((void (*)(void*))pp->procedure)(pp->arg);
     }
 }
 

@@ -29,7 +29,8 @@ enum {
     m_gameoptions,
     m_search,
     m_slist
-} m_state;
+};
+int m_state;
 
 void M_Menu_Main_f(void);
 void M_Menu_SinglePlayer_f(void);

@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.20)
-project(CleanQuake C)
+project(CleanQuake CXX)
 
-# Set standard C flags
-set(CMAKE_C_STANDARD 99)
-set(CMAKE_C_STANDARD_REQUIRED ON)
+# Set standard C++ flags
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Add SDL definition
 add_compile_definitions(SDL)
@@ -24,77 +24,77 @@ FetchContent_MakeAvailable(SDL2)
 
 # Gather source files
 set(CORE_SRCS
-    src/cd_sdl.c
-    src/chase.c
-    src/cl_demo.c
-    src/cl_input.c
-    src/cl_main.c
-    src/cl_parse.c
-    src/cl_tent.c
-    src/cmd.c
-    src/common.c
-    src/console.c
-    src/crc.c
-    src/cvar.c
-    src/d_edge.c
-    src/d_fill.c
-    src/d_init.c
-    src/d_modech.c
-    src/d_part.c
-    src/d_polyse.c
-    src/d_scan.c
-    src/d_sky.c
-    src/d_sprite.c
-    src/d_surf.c
-    src/d_vars.c
-    src/d_zpoint.c
-    src/draw.c
-    src/host.c
-    src/host_cmd.c
-    src/keys.c
-    src/mathlib.c
-    src/menu.c
-    src/model.c
-    src/net_bsd.c
-    src/net_dgrm.c
-    src/net_loop.c
-    src/net_main.c
-    src/net_udp.c
-    src/net_vcr.c
-    src/nonintel.c
-    src/pr_cmds.c
-    src/pr_edict.c
-    src/pr_exec.c
-    src/r_aclip.c
-    src/r_alias.c
-    src/r_bsp.c
-    src/r_draw.c
-    src/r_edge.c
-    src/r_efrag.c
-    src/r_light.c
-    src/r_main.c
-    src/r_misc.c
-    src/r_part.c
-    src/r_sky.c
-    src/r_sprite.c
-    src/r_surf.c
-    src/r_vars.c
-    src/sbar.c
-    src/screen.c
-    src/snd_dma.c
-    src/snd_mem.c
-    src/snd_mix.c
-    src/snd_sdl.c
-    src/sv_main.c
-    src/sv_move.c
-    src/sv_phys.c
-    src/sv_user.c
-    src/sys_sdl.c
-    src/vid_sdl.c
-    src/view.c
-    src/wad.c
-    src/world.c
-    src/zone.c
+    src/cd_sdl.cpp
+    src/chase.cpp
+    src/cl_demo.cpp
+    src/cl_input.cpp
+    src/cl_main.cpp
+    src/cl_parse.cpp
+    src/cl_tent.cpp
+    src/cmd.cpp
+    src/common.cpp
+    src/console.cpp
+    src/crc.cpp
+    src/cvar.cpp
+    src/d_edge.cpp
+    src/d_fill.cpp
+    src/d_init.cpp
+    src/d_modech.cpp
+    src/d_part.cpp
+    src/d_polyse.cpp
+    src/d_scan.cpp
+    src/d_sky.cpp
+    src/d_sprite.cpp
+    src/d_surf.cpp
+    src/d_vars.cpp
+    src/d_zpoint.cpp
+    src/draw.cpp
+    src/host.cpp
+    src/host_cmd.cpp
+    src/keys.cpp
+    src/mathlib.cpp
+    src/menu.cpp
+    src/model.cpp
+    src/net_bsd.cpp
+    src/net_dgrm.cpp
+    src/net_loop.cpp
+    src/net_main.cpp
+    src/net_udp.cpp
+    src/net_vcr.cpp
+    src/nonintel.cpp
+    src/pr_cmds.cpp
+    src/pr_edict.cpp
+    src/pr_exec.cpp
+    src/r_aclip.cpp
+    src/r_alias.cpp
+    src/r_bsp.cpp
+    src/r_draw.cpp
+    src/r_edge.cpp
+    src/r_efrag.cpp
+    src/r_light.cpp
+    src/r_main.cpp
+    src/r_misc.cpp
+    src/r_part.cpp
+    src/r_sky.cpp
+    src/r_sprite.cpp
+    src/r_surf.cpp
+    src/r_vars.cpp
+    src/sbar.cpp
+    src/screen.cpp
+    src/snd_dma.cpp
+    src/snd_mem.cpp
+    src/snd_mix.cpp
+    src/snd_sdl.cpp
+    src/sv_main.cpp
+    src/sv_move.cpp
+    src/sv_phys.cpp
+    src/sv_user.cpp
+    src/sys_sdl.cpp
+    src/vid_sdl.cpp
+    src/view.cpp
+    src/wad.cpp
+    src/world.cpp
+    src/zone.cpp
 )
 
 add_executable(clean-quake ${CORE_SRCS})
@@ -108,5 +108,5 @@ target_link_libraries(clean-quake PRIVATE SDL2main SDL2-static ws2_32 winmm)
 if(MSVC)
     target_compile_options(clean-quake PRIVATE /W3 /wd4996 /wd4244 /wd4113 /wd4047 /wd4024)
 else()
-    target_compile_options(clean-quake PRIVATE -Wall -Wno-pointer-sign -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-int-conversion)
+    target_compile_options(clean-quake PRIVATE -Wall -Wno-write-strings)
 endif()

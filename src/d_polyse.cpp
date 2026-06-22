@@ -278,7 +278,7 @@ void D_PolysetRecursiveTriangle(int* lp1, int* lp2, int* lp3)
 {
     int* temp;
     int d;
-    int new[6];
+    int new_poly[6];
     int z;
     short* zbuf;
 
@@ -328,11 +328,11 @@ split2:
 
 split:
     // split this edge
-    new[0] = (lp1[0] + lp2[0]) >> 1;
-    new[1] = (lp1[1] + lp2[1]) >> 1;
-    new[2] = (lp1[2] + lp2[2]) >> 1;
-    new[3] = (lp1[3] + lp2[3]) >> 1;
-    new[5] = (lp1[5] + lp2[5]) >> 1;
+    new_poly[0] = (lp1[0] + lp2[0]) >> 1;
+    new_poly[1] = (lp1[1] + lp2[1]) >> 1;
+    new_poly[2] = (lp1[2] + lp2[2]) >> 1;
+    new_poly[3] = (lp1[3] + lp2[3]) >> 1;
+    new_poly[5] = (lp1[5] + lp2[5]) >> 1;
 
     // draw the point if splitting a leading edge
     if (lp2[1] > lp1[1]) {
@@ -343,20 +343,20 @@ split:
         goto nodraw;
     }
 
-    z = new[5] >> 16;
-    zbuf = zspantable[new[1]] + new[0];
+    z = new_poly[5] >> 16;
+    zbuf = zspantable[new_poly[1]] + new_poly[0];
     if (z >= *zbuf) {
         int pix;
 
         *zbuf = z;
-        pix = d_pcolormap[skintable[new[3] >> 16][new[2] >> 16]];
-        d_viewbuffer[d_scantable[new[1]] + new[0]] = pix;
+        pix = d_pcolormap[skintable[new_poly[3] >> 16][new_poly[2] >> 16]];
+        d_viewbuffer[d_scantable[new_poly[1]] + new_poly[0]] = pix;
     }
 
 nodraw:
     // recursively continue
-    D_PolysetRecursiveTriangle(lp3, lp1, new);
-    D_PolysetRecursiveTriangle(lp3, new, lp2);
+    D_PolysetRecursiveTriangle(lp3, lp1, new_poly);
+    D_PolysetRecursiveTriangle(lp3, new_poly, lp2);
 }
 
 /*
@@ -371,7 +371,7 @@ void D_PolysetUpdateTables(void)
 
     if (r_affinetridesc.skinwidth != skinwidth || r_affinetridesc.pskin != skinstart) {
         skinwidth = r_affinetridesc.skinwidth;
-        skinstart = r_affinetridesc.pskin;
+        skinstart = (byte*)r_affinetridesc.pskin;
         s = skinstart;
         for (i = 0; i < MAX_LBM_HEIGHT; i++, s += skinwidth) {
             skintable[i] = s;
@@ -550,7 +550,7 @@ void D_PolysetDrawSpans8(spanpackage_t* pspanpackage)
         }
 
         if (lcount) {
-            lpdest = pspanpackage->pdest;
+            lpdest = (byte*)pspanpackage->pdest;
             lptex = pspanpackage->ptex;
             lpz = pspanpackage->pz;
             lsfrac = pspanpackage->sfrac;
@@ -609,7 +609,7 @@ void D_PolysetFillSpans8(spanpackage_t* pspanpackage)
         }
 
         if (lcount) {
-            lpdest = pspanpackage->pdest;
+            lpdest = (byte*)pspanpackage->pdest;
 
             do {
                 *lpdest++ = color;

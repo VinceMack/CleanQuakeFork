@@ -136,7 +136,7 @@ void VID_Init(unsigned char* palette)
     vid.numpages = 1;
     vid.colormap = host_colormap;
     vid.fullbright = 256 - LittleLong(*((int*)vid.colormap + 2048));
-    VGA_pagebase = vid.buffer = screen->pixels;
+    VGA_pagebase = vid.buffer = (pixel_t*)screen->pixels;
     VGA_rowbytes = vid.rowbytes = screen->pitch;
     vid.conbuffer = vid.buffer;
     vid.conrowbytes = vid.rowbytes;

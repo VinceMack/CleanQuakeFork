@@ -68,19 +68,30 @@ Zone block
 
 void Memory_Init(void* buf, int size);
 
+#ifdef __cplusplus
+struct ReturnVoidPtr {
+    void* ptr;
+    ReturnVoidPtr(void* p) : ptr(p) {}
+    operator bool() const { return ptr != 0; }
+    template<typename T> operator T*() const { return (T*)ptr; }
+};
+#else
+typedef void* ReturnVoidPtr;
+#endif
+
 void Z_Free(void* ptr);
-void* Z_Malloc(int size); // returns 0 filled memory
-void* Z_Realloc(void* ptr, int new_size);
-void* Z_TagMalloc(int size, int tag);
+ReturnVoidPtr Z_Malloc(int size); // returns 0 filled memory
+ReturnVoidPtr Z_Realloc(void* ptr, int new_size);
+ReturnVoidPtr Z_TagMalloc(int size, int tag);
 
 void Z_DumpHeap(void);
 void Z_CheckHeap(void);
 int Z_FreeMemory(void);
 
-void* Hunk_Alloc(int size); // returns 0 filled memory
-void* Hunk_AllocName(int size, char* name);
+ReturnVoidPtr Hunk_Alloc(int size); // returns 0 filled memory
+ReturnVoidPtr Hunk_AllocName(int size, char* name);
 
-void* Hunk_HighAllocName(int size, char* name);
+ReturnVoidPtr Hunk_HighAllocName(int size, char* name);
 
 int Hunk_LowMark(void);
 void Hunk_FreeToLowMark(int mark);
@@ -88,7 +99,7 @@ void Hunk_FreeToLowMark(int mark);
 int Hunk_HighMark(void);
 void Hunk_FreeToHighMark(int mark);
 
-void* Hunk_TempAlloc(int size);
+ReturnVoidPtr Hunk_TempAlloc(int size);
 
 void Hunk_Check(void);
 
@@ -98,13 +109,13 @@ typedef struct cache_user_s {
 
 void Cache_Flush(void);
 
-void* Cache_Check(cache_user_t* c);
+ReturnVoidPtr Cache_Check(cache_user_t* c);
 // returns the cached data, and moves to the head of the LRU list
 // if present, otherwise returns NULL
 
 void Cache_Free(cache_user_t* c);
 
-void* Cache_Alloc(cache_user_t* c, int size, char* name);
+ReturnVoidPtr Cache_Alloc(cache_user_t* c, int size, char* name);
 // Returns NULL if all purgable data was tossed and there still
 // wasn't enough room.
 

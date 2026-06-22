@@ -251,8 +251,8 @@ CHANNEL MIXING
 ===============================================================================
 */
 
-void SND_PaintChannelFrom8(channel_t* ch, sfxcache_t* sc, int endtime);
-void SND_PaintChannelFrom16(channel_t* ch, sfxcache_t* sc, int endtime);
+void SND_PaintChannelFrom8(channel_t* ch, sfxcache_t* sc, int count, int offset);
+void SND_PaintChannelFrom16(channel_t* ch, sfxcache_t* sc, int count, int offset);
 
 void S_PaintChannels(int endtime)
 {
@@ -300,9 +300,9 @@ void S_PaintChannels(int endtime)
 
                 if (count > 0) {
                     if (sc->width == 1) {
-                        SND_PaintChannelFrom8(ch, sc, count);
+                        SND_PaintChannelFrom8(ch, sc, count, ltime - paintedtime);
                     } else {
-                        SND_PaintChannelFrom16(ch, sc, count);
+                        SND_PaintChannelFrom16(ch, sc, count, ltime - paintedtime);
                     }
 
                     ltime += count;
@@ -338,7 +338,7 @@ void SND_InitScaletable(void)
     }
 }
 
-void SND_PaintChannelFrom8(channel_t* ch, sfxcache_t* sc, int count)
+void SND_PaintChannelFrom8(channel_t* ch, sfxcache_t* sc, int count, int offset)
 {
     int data;
     int *lscale, *rscale;
@@ -355,18 +355,18 @@ void SND_PaintChannelFrom8(channel_t* ch, sfxcache_t* sc, int count)
 
     lscale = snd_scaletable[ch->leftvol >> 3];
     rscale = snd_scaletable[ch->rightvol >> 3];
-    sfx = (signed char*)sc->data + ch->pos;
+    sfx = (unsigned char*)sc->data + ch->pos;
 
     for (i = 0; i < count; i++) {
         data = sfx[i];
-        paintbuffer[i].left += lscale[data];
-        paintbuffer[i].right += rscale[data];
+        paintbuffer[offset + i].left += lscale[data];
+        paintbuffer[offset + i].right += rscale[data];
     }
 
     ch->pos += count;
 }
 
-void SND_PaintChannelFrom16(channel_t* ch, sfxcache_t* sc, int count)
+void SND_PaintChannelFrom16(channel_t* ch, sfxcache_t* sc, int count, int offset)
 {
     int data;
     int left, right;
@@ -382,8 +382,8 @@ void SND_PaintChannelFrom16(channel_t* ch, sfxcache_t* sc, int count)
         data = sfx[i];
         left = (data * leftvol) >> 8;
         right = (data * rightvol) >> 8;
-        paintbuffer[i].left += left;
-        paintbuffer[i].right += right;
+        paintbuffer[offset + i].left += left;
+        paintbuffer[offset + i].right += right;
     }
 
     ch->pos += count;

@@ -1,10 +1,4 @@
-/**
- * CD-ROM support has been removed from SDL 2.
- *
- * This file provides stubs just to maintain compatibility.
- *
- * Original by Mark Baker <homer1@together.net>
- */
+// cd_sdl.c -- CD audio stubs for SDL 2 compatibility
 
 #include <SDL.h>
 

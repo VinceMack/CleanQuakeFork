@@ -1,4 +1,4 @@
-// vid_sdl.h -- sdl video driver
+// vid_sdl.c -- SDL video driver
 
 #include "SDL.h"
 #include "quakedef.h"

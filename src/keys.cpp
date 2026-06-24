@@ -728,18 +728,3 @@ void Key_Event(int key, qboolean down)
         Sys_Error("Bad key_dest");
     }
 }
-
-/*
-===================
-Key_ClearStates
-===================
-*/
-void Key_ClearStates(void)
-{
-    int i;
-
-    for (i = 0; i < 256; i++) {
-        keydown[i] = false;
-        key_repeats[i] = 0;
-    }
-}

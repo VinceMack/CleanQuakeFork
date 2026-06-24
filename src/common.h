@@ -20,7 +20,6 @@ typedef struct sizebuf_s {
 } sizebuf_t;
 
 void SZ_Alloc(sizebuf_t* buf, int startsize);
-void SZ_Free(sizebuf_t* buf);
 void SZ_Clear(sizebuf_t* buf);
 void* SZ_GetSpace(sizebuf_t* buf, int length);
 void SZ_Write(sizebuf_t* buf, void* data, int length);
@@ -35,7 +34,6 @@ typedef struct link_s {
 void ClearLink(link_t* l);
 void RemoveLink(link_t* l);
 void InsertLinkBefore(link_t* l, link_t* before);
-void InsertLinkAfter(link_t* l, link_t* after);
 
 // (type *)STRUCT_FROM_LINK(link_t *link, type, member)
 // ent = STRUCT_FROM_LINK(link,entity_t,order)
@@ -100,7 +98,6 @@ float MSG_ReadAngle(void);
 
 void Q_memset(void* dest, int fill, int count);
 void Q_memcpy(void* dest, void* src, int count);
-int Q_memcmp(void* m1, void* m2, int count);
 void Q_strcpy(char* dest, char* src);
 void Q_strncpy(char* dest, char* src, int count);
 int Q_strlen(char* str);
@@ -127,8 +124,6 @@ int COM_CheckParm(char* parm);
 void COM_Init(char* path);
 void COM_InitArgv(int argc, char** argv);
 
-char* COM_SkipPath(char* pathname);
-void COM_StripExtension(char* in, char* out);
 void COM_FileBase(char* in, char* out);
 void COM_DefaultExtension(char* path, char* extension);
 
@@ -148,7 +143,6 @@ int COM_FOpenFile(char* filename, FILE** file);
 void COM_CloseFile(int h);
 
 byte* COM_LoadStackFile(char* path, void* buffer, int bufsize);
-byte* COM_LoadTempFile(char* path);
 byte* COM_LoadHunkFile(char* path);
 void COM_LoadCacheFile(char* path, struct cache_user_s* cu);
 

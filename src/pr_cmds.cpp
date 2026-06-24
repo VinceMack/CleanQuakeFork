@@ -644,20 +644,6 @@ void PF_TraceToss(void)
 }
 #endif
 
-/*
-=================
-PF_checkpos
-
-Returns true if the given entity can move to the given position from it's
-current position by walking or rolling.
-FIXME: make work...
-scalar checkpos (entity, vector)
-=================
-*/
-void PF_checkpos(void)
-{
-}
-
 //============================================================================
 
 byte checkpvs[MAX_MAP_LEAFS / 8];

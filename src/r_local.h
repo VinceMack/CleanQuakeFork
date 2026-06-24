@@ -111,15 +111,12 @@ void R_DrawSprite(void);
 void R_RenderFace(msurface_t* fa, int clipflags);
 void R_RenderPoly(msurface_t* fa, int clipflags);
 void R_RenderBmodelFace(bedge_t* pedges, msurface_t* psurf);
-void R_TransformPlane(mplane_t* p, float* normal, float* dist);
 void R_TransformFrustum(void);
 void R_SetSkyFrame(void);
 void R_DrawSurfaceBlock16(void);
 void R_DrawSurfaceBlock8(void);
 texture_t* R_TextureAnimation(texture_t* base);
 
-void R_GenSkyTile(void* pdest);
-void R_GenSkyTile16(void* pdest);
 void R_DrawSubmodelPolygons(model_t* pmodel, int clipflags);
 void R_DrawSolidClippedSubmodelPolygons(model_t* pmodel);
 
@@ -166,7 +163,6 @@ extern mvertex_t *r_ptverts, *r_ptvertsmax;
 extern vec3_t sbaseaxis[3], tbaseaxis[3];
 extern float entity_rotation[3][3];
 
-extern int reinit_surfcache;
 
 extern int r_currentkey;
 extern int r_currentbkey;

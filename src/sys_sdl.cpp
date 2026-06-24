@@ -23,21 +23,12 @@
 
 qboolean isDedicated;
 
-int noconinput = 0;
 
 char* basedir = ".";
 char* cachedir = "/tmp";
 
 cvar_t sys_linerefresh = { "sys_linerefresh", "0" }; // set for entity display
 cvar_t sys_nostdout = { "sys_nostdout", "0" };
-
-// =======================================================================
-// General routines
-// =======================================================================
-
-void Sys_DebugNumber(int y, int val)
-{
-}
 
 void Sys_Printf(char* fmt, ...)
 {
@@ -94,17 +85,6 @@ void Sys_Error(char* error, ...)
 
     Host_Shutdown();
     exit(1);
-}
-
-void Sys_Warn(char* warning, ...)
-{
-    va_list argptr;
-    char string[1024];
-
-    va_start(argptr, warning);
-    vsprintf(string, warning, argptr);
-    va_end(argptr);
-    fprintf(stderr, "Warning: %s", string);
 }
 
 /*
@@ -269,20 +249,6 @@ void Sys_mkdir(char* path)
 #endif
 }
 
-void Sys_DebugLog(char* file, char* fmt, ...)
-{
-    va_list argptr;
-    static char data[1024];
-    FILE* fp;
-
-    va_start(argptr, fmt);
-    vsprintf(data, fmt, argptr);
-    va_end(argptr);
-    fp = fopen(file, "a");
-    fwrite(data, strlen(data), 1, fp);
-    fclose(fp);
-}
-
 double Sys_FloatTime(void)
 {
     static int starttime = 0;
@@ -298,41 +264,8 @@ double Sys_FloatTime(void)
 
 static volatile int oktogo;
 
-void alarm_handler(int x)
-{
-    oktogo = 1;
-}
-
-byte* Sys_ZoneBase(int* size)
-{
-    char* QUAKEOPT = getenv("QUAKEOPT");
-
-    *size = 0xc00000;
-    if (QUAKEOPT) {
-        while (*QUAKEOPT) {
-            if (tolower(*QUAKEOPT++) == 'm') {
-                *size = atof(QUAKEOPT) * 1024 * 1024;
-                break;
-            }
-        }
-    }
-
-    return (byte*)malloc(*size);
-}
-
 void Sys_LineRefresh(void)
 {
-}
-
-void Sys_Sleep(void)
-{
-    SDL_Delay(1);
-}
-
-void floating_point_exception_handler(int whatever)
-{
-    //	Sys_Warn("floating point exception\n");
-    signal(SIGFPE, floating_point_exception_handler);
 }
 
 void moncontrol(int x)
@@ -400,21 +333,4 @@ int main(int c, char** v)
             Sys_LineRefresh();
         }
     }
-}
-
-/*
-================
-Sys_MakeCodeWriteable
-================
-*/
-void Sys_MakeCodeWriteable(unsigned long startaddr, unsigned long length)
-{
-    fprintf(stderr, "writable code %lx-%lx\n", startaddr, startaddr + length);
-
-#ifdef _WIN32
-    DWORD oldProtect;
-    if (!VirtualProtect((LPVOID)startaddr, length, PAGE_EXECUTE_READWRITE, &oldProtect)) {
-        Sys_Error("Protection change failed\n");
-    }
-#endif
 }

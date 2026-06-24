@@ -69,17 +69,6 @@ cvar_t _snd_mixahead = { "_snd_mixahead", "0.1", true };
 //
 
 qboolean fakedma = false;
-int fakedma_updates = 15;
-
-void S_AmbientOff(void)
-{
-    snd_ambient = false;
-}
-
-void S_AmbientOn(void)
-{
-    snd_ambient = true;
-}
 
 void S_SoundInfo_f(void)
 {
@@ -754,38 +743,6 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
     S_Update_();
 }
 
-void GetSoundtime(void)
-{
-    int samplepos;
-    static int buffers;
-    static int oldsamplepos;
-    int fullsamples;
-
-    fullsamples = shm->samples / shm->channels;
-
-// it is possible to miscount buffers if it has wrapped twice between
-// calls to S_Update.  Oh well.
-#ifdef __sun__
-    soundtime = SNDDMA_GetSamples();
-#else
-    samplepos = SNDDMA_GetDMAPos();
-
-    if (samplepos < oldsamplepos) {
-        buffers++; // buffer wrapped
-
-        if (paintedtime > 0x40000000) { // time to chop things off to avoid 32 bit limits
-            buffers = 0;
-            paintedtime = fullsamples;
-            S_StopAllSounds(true);
-        }
-    }
-
-    oldsamplepos = samplepos;
-
-    soundtime = buffers * fullsamples + samplepos / shm->channels;
-#endif
-}
-
 void S_ExtraUpdate(void)
 {
 
@@ -901,10 +858,6 @@ void S_LocalSound(char* sound)
     }
 
     S_StartSound(cl.viewentity, -1, sfx, vec3_origin, 1, 1);
-}
-
-void S_ClearPrecache(void)
-{
 }
 
 void S_BeginPrecaching(void)

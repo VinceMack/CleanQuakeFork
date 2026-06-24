@@ -99,14 +99,6 @@ void InsertLinkBefore(link_t* l, link_t* before)
     l->next->prev = l;
 }
 
-void InsertLinkAfter(link_t* l, link_t* after)
-{
-    l->next = after->next;
-    l->prev = after;
-    l->prev->next = l;
-    l->next->prev = l;
-}
-
 /*
 ============================================================================
 
@@ -146,18 +138,6 @@ void Q_memcpy(void* dest, void* src, int count)
             ((byte*)dest)[i] = ((byte*)src)[i];
         }
     }
-}
-
-int Q_memcmp(void* m1, void* m2, int count)
-{
-    while (count) {
-        count--;
-        if (((byte*)m1)[count] != ((byte*)m2)[count]) {
-            return -1;
-        }
-    }
-
-    return 0;
 }
 
 void Q_strcpy(char* dest, char* src)
@@ -739,14 +719,6 @@ void SZ_Alloc(sizebuf_t* buf, int startsize)
     buf->cursize = 0;
 }
 
-void SZ_Free(sizebuf_t* buf)
-{
-    //      Z_Free (buf->data);
-    //      buf->data = NULL;
-    //      buf->maxsize = 0;
-    buf->cursize = 0;
-}
-
 void SZ_Clear(sizebuf_t* buf)
 {
     buf->cursize = 0;
@@ -797,40 +769,6 @@ void SZ_Print(sizebuf_t* buf, char* data)
 }
 
 //============================================================================
-
-/*
-============
-COM_SkipPath
-============
-*/
-char* COM_SkipPath(char* pathname)
-{
-    char* last;
-
-    last = pathname;
-    while (*pathname) {
-        if (*pathname == '/') {
-            last = pathname + 1;
-        }
-
-        pathname++;
-    }
-
-    return last;
-}
-
-/*
-============
-COM_StripExtension
-============
-*/
-void COM_StripExtension(char* in, char* out)
-{
-    while (*in && *in != '.') {
-        *out++ = *in++;
-    }
-    *out = 0;
-}
 
 /*
 ============
@@ -1184,20 +1122,6 @@ char* va(char* format, ...)
     va_end(argptr);
 
     return string;
-}
-
-/// just for debugging
-int memsearch(byte* start, int count, int search)
-{
-    int i;
-
-    for (i = 0; i < count; i++) {
-        if (start[i] == search) {
-            return i;
-        }
-    }
-
-    return -1;
 }
 
 /*
@@ -1588,11 +1512,6 @@ byte* COM_LoadFile(char* path, int usehunk)
 byte* COM_LoadHunkFile(char* path)
 {
     return COM_LoadFile(path, 1);
-}
-
-byte* COM_LoadTempFile(char* path)
-{
-    return COM_LoadFile(path, 2);
 }
 
 void COM_LoadCacheFile(char* path, struct cache_user_s* cu)

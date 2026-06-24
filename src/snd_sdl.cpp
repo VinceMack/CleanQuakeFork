@@ -74,11 +74,6 @@ qboolean SNDDMA_Init(void)
     return 1;
 }
 
-int SNDDMA_GetDMAPos(void)
-{
-    return shm->samplepos;
-}
-
 void SNDDMA_Shutdown(void)
 {
     if (snd_inited) {

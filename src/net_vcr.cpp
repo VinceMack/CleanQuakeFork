@@ -46,10 +46,6 @@ void VCR_ReadNext(void)
     }
 }
 
-void VCR_Listen(qboolean state)
-{
-}
-
 void VCR_Shutdown(void)
 {
 }

@@ -134,7 +134,6 @@ void D_DrawParticle(particle_t* pparticle);
 void D_DrawPoly(void);
 void D_DrawSprite(void);
 void D_DrawSurfaces(void);
-void D_DrawZPoint(void);
 void D_EnableBackBufferAccess(void);
 void D_EndParticles(void);
 void D_Init(void);
@@ -144,7 +143,6 @@ void D_StartParticles(void);
 void D_TurnZOn(void);
 void D_WarpScreen(void);
 
-void D_FillRect(vrect_t* vrect, int color);
 void D_DrawRect(void);
 void D_UpdateRects(vrect_t* prect);
 
@@ -183,7 +181,6 @@ typedef struct {
 extern drawsurf_t r_drawsurf;
 
 void R_DrawSurface(void);
-void R_GenTile(msurface_t* psurf, void* pdest);
 
 // !!! if this is changed, it must be changed in d_ifacea.h too !!!
 #define TURB_TEX_SIZE 64 // base turbulent texture size

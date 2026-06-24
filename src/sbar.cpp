@@ -408,34 +408,6 @@ int Sbar_ColorForMap(int m)
 
 /*
 ===============
-Sbar_UpdateScoreboard
-===============
-*/
-void Sbar_UpdateScoreboard(void)
-{
-    int i, k;
-    int top, bottom;
-    scoreboard_t* s;
-
-    Sbar_SortFrags();
-
-    // draw the text
-    memset(scoreboardtext, 0, sizeof(scoreboardtext));
-
-    for (i = 0; i < scoreboardlines; i++) {
-        k = fragsort[i];
-        s = &cl.scores[k];
-        sprintf(&scoreboardtext[i][1], "%3i %s", s->frags, s->name);
-
-        top = s->colors & 0xf0;
-        bottom = (s->colors & 15) << 4;
-        scoreboardtop[i] = Sbar_ColorForMap(top);
-        scoreboardbottom[i] = Sbar_ColorForMap(bottom);
-    }
-}
-
-/*
-===============
 Sbar_SoloScoreboard
 ===============
 */

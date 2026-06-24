@@ -82,7 +82,6 @@ void S_ExtraUpdate(void);
 
 sfx_t* S_PrecacheSound(char* sample);
 void S_TouchSound(char* sample);
-void S_ClearPrecache(void);
 void S_BeginPrecaching(void);
 void S_EndPrecaching(void);
 void S_PaintChannels(int endtime);
@@ -98,7 +97,6 @@ void SND_Spatialize(channel_t* ch);
 qboolean SNDDMA_Init(void);
 
 // gets the current DMA position
-int SNDDMA_GetDMAPos(void);
 
 // shutdown the DMA xfer.
 void SNDDMA_Shutdown(void);
@@ -124,7 +122,6 @@ extern int total_channels;
 //
 
 extern qboolean fakedma;
-extern int fakedma_updates;
 extern int paintedtime;
 extern vec3_t listener_origin;
 extern vec3_t listener_forward;
@@ -150,7 +147,5 @@ wavinfo_t GetWavinfo(char* name, byte* wav, int wavlength);
 void SND_InitScaletable(void);
 void SNDDMA_Submit(void);
 
-void S_AmbientOff(void);
-void S_AmbientOn(void);
 
 #endif

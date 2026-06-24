@@ -772,29 +772,6 @@ int SCR_ModalMessage(char* text)
     return key_lastpress == 'y';
 }
 
-//=============================================================================
-
-/*
-===============
-SCR_BringDownConsole
-
-Brings the console down and fades the palettes back to normal
-================
-*/
-void SCR_BringDownConsole(void)
-{
-    int i;
-
-    scr_centertime_off = 0;
-
-    for (i = 0; i < 20 && scr_conlines != scr_con_current; i++) {
-        SCR_UpdateScreen();
-    }
-
-    cl.cshifts[0].percent = 0; // no area contents palette on next frame
-    VID_SetPalette(host_basepal);
-}
-
 /*
 ==================
 SCR_UpdateScreen
@@ -954,15 +931,4 @@ void SCR_UpdateScreen(void)
 
         VID_Update(&vrect);
     }
-}
-
-/*
-==================
-SCR_UpdateWholeScreen
-==================
-*/
-void SCR_UpdateWholeScreen(void)
-{
-    scr_fullupdate = 0;
-    SCR_UpdateScreen();
 }

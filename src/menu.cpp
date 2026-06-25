@@ -2,9 +2,7 @@
 
 #include "quakedef.h"
 
-#ifdef _WIN32
-#include "winquake.h"
-#endif
+
 
 void (*vid_menudrawfn)(void);
 void (*vid_menukeyfn)(int key);
@@ -967,11 +965,7 @@ void M_Net_Draw(void)
     if (serialAvailable) {
         p = Draw_CachePic("gfx/netmen1.lmp");
     } else {
-#ifdef _WIN32
-        p = NULL;
-#else
         p = Draw_CachePic("gfx/dim_modm.lmp");
-#endif
     }
 
     if (p) {
@@ -983,11 +977,7 @@ void M_Net_Draw(void)
     if (serialAvailable) {
         p = Draw_CachePic("gfx/netmen2.lmp");
     } else {
-#ifdef _WIN32
-        p = NULL;
-#else
         p = Draw_CachePic("gfx/dim_drct.lmp");
-#endif
     }
 
     if (p) {
@@ -1102,11 +1092,7 @@ again:
 //=============================================================================
 /* OPTIONS MENU */
 
-#ifdef _WIN32
-#define OPTIONS_ITEMS 14
-#else
 #define OPTIONS_ITEMS 13
-#endif
 
 #define SLIDER_RANGE 10
 
@@ -1118,12 +1104,7 @@ void M_Menu_Options_f(void)
     m_state = m_options;
     m_entersound = true;
 
-#ifdef _WIN32
-    if ((options_cursor == 13) && (modestate != MS_WINDOWED)) {
-        options_cursor = 0;
-    }
 
-#endif
 }
 
 void M_AdjustSliders(int dir)
@@ -1168,11 +1149,7 @@ void M_AdjustSliders(int dir)
         Cvar_SetValue("sensitivity", sensitivity.value);
         break;
     case 6: // music volume
-#ifdef _WIN32
-        bgmvolume.value += dir * 1.0;
-#else
         bgmvolume.value += dir * 0.1;
-#endif
         if (bgmvolume.value < 0) {
             bgmvolume.value = 0;
         }
@@ -1219,11 +1196,7 @@ void M_AdjustSliders(int dir)
         Cvar_SetValue("lookstrafe", !lookstrafe.value);
         break;
 
-#ifdef _WIN32
-    case 13: // _windowed_mouse
-        Cvar_SetValue("_windowed_mouse", !_windowed_mouse.value);
-        break;
-#endif
+
     }
 }
 
@@ -1305,13 +1278,7 @@ void M_Options_Draw(void)
         M_Print(16, 128, "         Video Options");
     }
 
-#ifdef _WIN32
-    if (modestate == MS_WINDOWED) {
-        M_Print(16, 136, "             Use Mouse");
-        M_DrawCheckbox(220, 136, _windowed_mouse.value);
-    }
 
-#endif
 
     // cursor
     M_DrawCharacter(200, 32 + options_cursor * 8, 12 + ((int)(realtime * 4) & 1));
@@ -1382,16 +1349,7 @@ void M_Options_Key(int k)
         }
     }
 
-#ifdef _WIN32
-    if ((options_cursor == 13) && (modestate != MS_WINDOWED)) {
-        if (k == K_UPARROW) {
-            options_cursor = 12;
-        } else {
-            options_cursor = 0;
-        }
-    }
 
-#endif
 }
 
 //=============================================================================
@@ -1649,9 +1607,6 @@ void M_Help_Key(int key)
 
 int msgNumber;
 qboolean wasInMenus;
-
-#ifndef _WIN32
-#endif
 
 void M_Menu_Quit_f(void)
 {

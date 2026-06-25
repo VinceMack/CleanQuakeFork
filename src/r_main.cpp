@@ -264,9 +264,6 @@ void R_NewMap(void)
 
     r_dowarpold = false;
     r_viewchanged = false;
-#ifdef PASSAGES
-    CreatePassages();
-#endif
 }
 
 /*
@@ -618,9 +615,6 @@ void R_DrawViewModel(void)
 
     r_viewlighting.plightvec = lightvec;
 
-#ifdef QUAKE2
-    cl.light_level = r_viewlighting.ambientlight;
-#endif
 
     R_AliasDrawModel(&r_viewlighting);
 }
@@ -882,11 +876,7 @@ void R_RenderView_(void)
 
     R_SetupFrame();
 
-#ifdef PASSAGES
-    SetVisibilityByPassages();
-#else
     R_MarkLeaves(); // done here so we know if we're in water
-#endif
 
     // make FDIV fast. This reduces timing precision after we've been running for a
     // while, so we don't do it globally.  This also sets chop mode, and we do it

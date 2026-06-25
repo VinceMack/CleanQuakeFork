@@ -3,13 +3,6 @@
 // This is enables a simple IP banning mechanism
 #define BAN_TEST
 
-#ifdef BAN_TEST
-#if defined(_WIN32)
-#include <windows.h>
-#elif defined(NeXT)
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#else
 #define AF_INET 2 /* internet */
 
 struct in_addr {
@@ -37,8 +30,6 @@ struct sockaddr_in {
 
 char* inet_ntoa(struct in_addr in);
 unsigned long inet_addr(const char* cp);
-#endif
-#endif // BAN_TEST
 
 #include "quakedef.h"
 #include "net_dgrm.h"
@@ -85,65 +76,6 @@ char* StrAddr(struct qsockaddr* addr)
 }
 #endif
 
-#ifdef BAN_TEST
-unsigned long banAddr = 0x00000000;
-unsigned long banMask = 0xffffffff;
-
-void NET_Ban_f(void)
-{
-    char addrStr[32];
-    char maskStr[32];
-    void (*print)(char* fmt, ...);
-
-    if (cmd_source == src_command) {
-        if (!sv.active) {
-            Cmd_ForwardToServer();
-
-            return;
-        }
-
-        print = Con_Printf;
-    } else {
-        if (pr_global_struct->deathmatch && !host_client->privileged) {
-            return;
-        }
-
-        print = SV_ClientPrintf;
-    }
-
-    switch (Cmd_Argc()) {
-    case 1:
-        if (((struct in_addr*)&banAddr)->s_addr) {
-            Q_strcpy(addrStr, inet_ntoa(*(struct in_addr*)&banAddr));
-            Q_strcpy(maskStr, inet_ntoa(*(struct in_addr*)&banMask));
-            print("Banning %s [%s]\n", addrStr, maskStr);
-        } else {
-            print("Banning not active\n");
-        }
-
-        break;
-
-    case 2:
-        if (Q_strcasecmp(Cmd_Argv(1), "off") == 0) {
-            banAddr = 0x00000000;
-        } else {
-            banAddr = inet_addr(Cmd_Argv(1));
-        }
-
-        banMask = 0xffffffff;
-        break;
-
-    case 3:
-        banAddr = inet_addr(Cmd_Argv(1));
-        banMask = inet_addr(Cmd_Argv(2));
-        break;
-
-    default:
-        print("BAN ip_address [mask]\n");
-        break;
-    }
-}
-#endif
 
 int Datagram_SendMessage(qsocket_t* sock, sizebuf_t* data)
 {
@@ -808,9 +740,6 @@ int Datagram_Init(void)
         net_landrivers[i].controlSock = csock;
     }
 
-#ifdef BAN_TEST
-    Cmd_AddCommand("ban", NET_Ban_f);
-#endif
     Cmd_AddCommand("test", Test_f);
     Cmd_AddCommand("test2", Test2_f);
 
@@ -1019,27 +948,6 @@ static qsocket_t* _Datagram_CheckNewConnections(void)
         return NULL;
     }
 
-#ifdef BAN_TEST
-    // check for a ban
-    if (clientaddr.sa_family == AF_INET) {
-        unsigned long testAddr;
-        testAddr = ((struct sockaddr_in*)&clientaddr)->sin_addr.s_addr;
-        if ((testAddr & banMask) == banAddr) {
-            SZ_Clear(&net_message);
-            // save space for the header, filled in later
-            MSG_WriteLong(&net_message, 0);
-            MSG_WriteByte(&net_message, CCREP_REJECT);
-            MSG_WriteString(&net_message, "You have been banned.\n");
-            *((int*)net_message.data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-            dfunc.Write(acceptsock, net_message.data, net_message.cursize,
-                &clientaddr);
-            SZ_Clear(&net_message);
-
-            return NULL;
-        }
-    }
-
-#endif
 
     // see if this guy is already connected
     for (s = net_activeSockets; s; s = s->next) {

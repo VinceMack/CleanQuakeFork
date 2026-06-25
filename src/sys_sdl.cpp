@@ -11,12 +11,6 @@
 #include <errno.h>
 #include <time.h>
 
-#ifdef _WIN32
-#include <windows.h>
-#include <io.h>
-#include <direct.h>
-#endif
-
 #include <SDL.h>
 
 #include "quakedef.h"
@@ -242,9 +236,6 @@ int Sys_FileTime(char* path)
 
 void Sys_mkdir(char* path)
 {
-#ifdef _WIN32
-    _mkdir(path);
-#endif
 }
 
 double Sys_FloatTime(void)

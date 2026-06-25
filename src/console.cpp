@@ -1,15 +1,7 @@
 // console.cpp -- console text display and input
 
-#ifdef NeXT
-#include <libc.h>
-#endif
-#ifndef _MSC_VER
-#include <unistd.h>
-#endif
-#include <fcntl.h>
-#ifdef _WIN32
 #include <io.h>
-#endif
+#include <fcntl.h>
 #include "quakedef.h"
 
 int con_linewidth;

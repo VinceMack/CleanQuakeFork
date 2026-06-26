@@ -4,7 +4,7 @@
 #include "quakedef.h"
 #include <stdlib.h>
 
-#define DYNAMIC_SIZE 0xc000
+#define DYNAMIC_SIZE 0x100000
 
 #define ZONEID 0x1d4a11
 #define MINFRAGMENT 64
@@ -787,6 +787,13 @@ cache_system_t* Cache_TryAlloc(int size, qboolean nobottom)
 
         // continue looking
         new_cs = (cache_system_t*)((byte*)cs + cs->size);
+        
+        // FIX: If the block we just checked was below the new Hunk boundary,
+        // clamp new_cs back up to the Hunk boundary to prevent overlapping!
+        if ((byte*)new_cs < hunk_base + hunk_low_used) {
+            new_cs = (cache_system_t*)(hunk_base + hunk_low_used);
+        }
+
         cs = cs->next;
 
     } while (cs != &cache_head);

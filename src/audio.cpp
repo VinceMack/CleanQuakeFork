@@ -1,7 +1,11 @@
-// snd_dma.cpp -- main control for any streaming sound output device
+// audio.cpp -- merged audio subsystem (snd_*.cpp)
+// Contains: sound control, caching, mixing, and SDL audio driver
 
 #include "quakedef.hpp"
 
+// ============================================================================
+// snd_dma.cpp -- main control for any streaming sound output device
+// ============================================================================
 
 void S_Play(void);
 void S_PlayVol(void);
@@ -60,12 +64,6 @@ cvar_t _snd_mixahead = { "_snd_mixahead", "0.1", true };
 // ====================================================================
 // User-setable variables
 // ====================================================================
-
-//
-// Fake dma is a synchronous faking of the DMA progress used for
-// isolating performance in the renderer.  The fakedma_updates is
-// number of times S_Update() is called per second.
-//
 
 qboolean fakedma = false;
 
@@ -183,11 +181,6 @@ void S_Init(void)
     if (shm) {
         Con_Printf("Sound sampling rate: %i\n", shm->speed);
     }
-
-    // provides a tick sound until washed clean
-
-    //	if (shm->buffer)
-    //		shm->buffer[4] = shm->buffer[5] = 0x7f;	// force a pop for debugging
 
     ambient_sfx[AMBIENT_WATER] = S_PrecacheSound("ambience/water1.wav");
     ambient_sfx[AMBIENT_SKY] = S_PrecacheSound("ambience/wind2.wav");
@@ -858,4 +851,678 @@ void S_BeginPrecaching(void)
 
 void S_EndPrecaching(void)
 {
+}
+
+// ============================================================================
+// snd_mem.cpp -- sound caching and WAV loading
+// ============================================================================
+
+int cache_full_cycle;
+
+byte* S_Alloc(int size);
+
+/*
+================
+ResampleSfx
+================
+*/
+void ResampleSfx(sfx_t* sfx, int inrate, int inwidth, byte* data)
+{
+    int outcount;
+    int srcsample;
+    float stepscale;
+    int i;
+    int sample, samplefrac, fracstep;
+    sfxcache_t* sc;
+
+    sc = (sfxcache_t *) Cache_Check(&sfx->cache);
+    if (!sc) {
+        return;
+    }
+
+    stepscale = (float)inrate / shm->speed; // this is usually 0.5, 1, or 2
+
+    outcount = sc->length / stepscale;
+    sc->length = outcount;
+    if (sc->loopstart != -1) {
+        sc->loopstart = sc->loopstart / stepscale;
+    }
+
+    sc->speed = shm->speed;
+    if (loadas8bit.value) {
+        sc->width = 1;
+    } else {
+        sc->width = inwidth;
+    }
+
+    sc->stereo = 0;
+
+    // resample / decimate to the current source rate
+
+    if (stepscale == 1 && inwidth == 1 && sc->width == 1) {
+        // fast special case
+        for (i = 0; i < outcount; i++) {
+            ((signed char*)sc->data)[i] = (int)((unsigned char)(data[i]) - 128);
+        }
+    } else {
+        // general case
+        samplefrac = 0;
+        fracstep = stepscale * 256;
+        for (i = 0; i < outcount; i++) {
+            srcsample = samplefrac >> 8;
+            samplefrac += fracstep;
+            if (inwidth == 2) {
+                sample = LittleShort(((short*)data)[srcsample]);
+            } else {
+                sample = (int)((unsigned char)(data[srcsample]) - 128) << 8;
+            }
+
+            if (sc->width == 2) {
+                ((short*)sc->data)[i] = sample;
+            } else {
+                ((signed char*)sc->data)[i] = sample >> 8;
+            }
+        }
+    }
+}
+
+//=============================================================================
+
+/*
+==============
+S_LoadSound
+==============
+*/
+sfxcache_t* S_LoadSound(sfx_t* s)
+{
+    char namebuffer[256];
+    byte* data;
+    wavinfo_t info;
+    int len;
+    float stepscale;
+    sfxcache_t* sc;
+    byte stackbuf[1 * 1024]; // avoid dirtying the cache heap
+
+    // see if still in memory
+    sc = (sfxcache_t *) Cache_Check(&s->cache);
+    if (sc) {
+        return sc;
+    }
+
+    //Con_Printf ("S_LoadSound: %x\n", (int)stackbuf);
+    // load it in
+    Q_strcpy(namebuffer, "sound/");
+    Q_strcat(namebuffer, s->name);
+
+    //	Con_Printf ("loading %s\n",namebuffer);
+
+    data = COM_LoadStackFile(namebuffer, stackbuf, sizeof(stackbuf));
+
+    if (!data) {
+        Con_Printf("Couldn't load %s\n", namebuffer);
+
+        return NULL;
+    }
+
+    info = GetWavinfo(s->name, data, com_filesize);
+    if (info.channels != 1) {
+        Con_Printf("%s is a stereo sample\n", s->name);
+
+        return NULL;
+    }
+
+    stepscale = (float)info.rate / shm->speed;
+    len = info.samples / stepscale;
+
+    len = len * info.width * info.channels;
+
+    sc = (sfxcache_t *) Cache_Alloc(&s->cache, len + sizeof(sfxcache_t), s->name);
+    if (!sc) {
+        return NULL;
+    }
+
+    sc->length = info.samples;
+    sc->loopstart = info.loopstart;
+    sc->speed = info.rate;
+    sc->width = info.width;
+    sc->stereo = info.channels;
+
+    ResampleSfx(s, sc->speed, sc->width, data + info.dataofs);
+
+    return sc;
+}
+
+/*
+===============================================================================
+
+WAV loading
+
+===============================================================================
+*/
+
+byte* data_p;
+byte* iff_end;
+byte* last_chunk;
+byte* iff_data;
+int iff_chunk_len;
+
+short GetLittleShort(void)
+{
+    short val = 0;
+    val = *data_p;
+    val = val + (*(data_p + 1) << 8);
+    data_p += 2;
+
+    return val;
+}
+
+int GetLittleLong(void)
+{
+    int val = 0;
+    val = *data_p;
+    val = val + (*(data_p + 1) << 8);
+    val = val + (*(data_p + 2) << 16);
+    val = val + (*(data_p + 3) << 24);
+    data_p += 4;
+
+    return val;
+}
+
+void FindNextChunk(char* name)
+{
+    while (1) {
+        data_p = last_chunk;
+
+        if (data_p >= iff_end) { // didn't find the chunk
+            data_p = NULL;
+
+            return;
+        }
+
+        data_p += 4;
+        iff_chunk_len = GetLittleLong();
+        if (iff_chunk_len < 0) {
+            data_p = NULL;
+
+            return;
+        }
+
+        //		if (iff_chunk_len > 1024*1024)
+        //			Sys_Error ("FindNextChunk: %i length is past the 1 meg sanity limit", iff_chunk_len);
+        data_p -= 8;
+        last_chunk = data_p + 8 + ((iff_chunk_len + 1) & ~1);
+        if (!Q_strncmp((char*)data_p, name, 4)) {
+            return;
+        }
+    }
+}
+
+void FindChunk(char* name)
+{
+    last_chunk = iff_data;
+    FindNextChunk(name);
+}
+
+/*
+============
+GetWavinfo
+============
+*/
+wavinfo_t GetWavinfo(char* name, byte* wav, int wavlength)
+{
+    wavinfo_t info;
+    int i;
+    int format;
+    int samples;
+
+    memset(&info, 0, sizeof(info));
+
+    if (!wav) {
+        return info;
+    }
+
+    iff_data = wav;
+    iff_end = wav + wavlength;
+
+    // find "RIFF" chunk
+    FindChunk("RIFF");
+    if (!(data_p && !Q_strncmp((char*)data_p + 8, "WAVE", 4))) {
+        Con_Printf("Missing RIFF/WAVE chunks\n");
+
+        return info;
+    }
+
+    // get "fmt " chunk
+    iff_data = data_p + 12;
+    // DumpChunks ();
+
+    FindChunk("fmt ");
+    if (!data_p) {
+        Con_Printf("Missing fmt chunk\n");
+
+        return info;
+    }
+
+    data_p += 8;
+    format = GetLittleShort();
+    if (format != 1) {
+        Con_Printf("Microsoft PCM format only\n");
+
+        return info;
+    }
+
+    info.channels = GetLittleShort();
+    info.rate = GetLittleLong();
+    data_p += 4 + 2;
+    info.width = GetLittleShort() / 8;
+
+    // get cue chunk
+    FindChunk("cue ");
+    if (data_p) {
+        data_p += 32;
+        info.loopstart = GetLittleLong();
+        //		Con_Printf("loopstart=%d\n", sfx->loopstart);
+
+        // if the next chunk is a LIST chunk, look for a cue length marker
+        FindNextChunk("LIST");
+        if (data_p) {
+            if (!strncmp(
+                    (char*)data_p + 28, "mark",
+                    4)) { // this is not a proper parse, but it works with cooledit...
+                data_p += 24;
+                i = GetLittleLong(); // samples in loop
+                info.samples = info.loopstart + i;
+                //				Con_Printf("looped length: %i\n", i);
+            }
+        }
+    } else {
+        info.loopstart = -1;
+    }
+
+    // find data chunk
+    FindChunk("data");
+    if (!data_p) {
+        Con_Printf("Missing data chunk\n");
+
+        return info;
+    }
+
+    data_p += 4;
+    samples = GetLittleLong() / info.width;
+
+    if (info.samples) {
+        if (samples < info.samples) {
+            Sys_Error("Sound %s has a bad loop length", name);
+        }
+    } else {
+        info.samples = samples;
+    }
+
+    info.dataofs = data_p - wav;
+
+    return info;
+}
+
+// ============================================================================
+// snd_mix.cpp -- portable code to mix sounds
+// ============================================================================
+
+#include <stdint.h>
+
+#define PAINTBUFFER_SIZE 512
+portable_samplepair_t paintbuffer[PAINTBUFFER_SIZE];
+int snd_scaletable[32][256];
+int *snd_p, snd_linear_count, snd_vol;
+short* snd_out;
+
+void Snd_WriteLinearBlastStereo16(void);
+
+void Snd_WriteLinearBlastStereo16(void)
+{
+    int i;
+    int val;
+
+    for (i = 0; i < snd_linear_count; i += 2) {
+        val = (snd_p[i] * snd_vol) >> 8;
+        if (val > 0x7fff) {
+            snd_out[i] = 0x7fff;
+        } else if (val < -32768) {
+            snd_out[i] = -32768;
+        } else {
+            snd_out[i] = val;
+        }
+
+        val = (snd_p[i + 1] * snd_vol) >> 8;
+        if (val > 0x7fff) {
+            snd_out[i + 1] = 0x7fff;
+        } else if (val < -32768) {
+            snd_out[i + 1] = -32768;
+        } else {
+            snd_out[i + 1] = val;
+        }
+    }
+}
+
+void S_TransferStereo16(int endtime)
+{
+    int lpos;
+    int lpaintedtime;
+    unsigned char* pbuf;
+
+    snd_vol = volume.value * 256;
+
+    snd_p = (int*)paintbuffer;
+    lpaintedtime = paintedtime;
+
+    {
+        pbuf = (unsigned char*)shm->buffer;
+    }
+
+    while (lpaintedtime < endtime) {
+        // handle recirculating buffer issues
+        lpos = lpaintedtime & ((shm->samples >> 1) - 1);
+
+        snd_out = (short*)pbuf + (lpos << 1);
+
+        snd_linear_count = (shm->samples >> 1) - lpos;
+        if (lpaintedtime + snd_linear_count > endtime) {
+            snd_linear_count = endtime - lpaintedtime;
+        }
+
+        snd_linear_count <<= 1;
+
+        // write a linear blast of samples
+        Snd_WriteLinearBlastStereo16();
+
+        snd_p += snd_linear_count;
+        lpaintedtime += (snd_linear_count >> 1);
+    }
+
+}
+
+void S_TransferPaintBuffer(int endtime)
+{
+    int out_idx;
+    int count;
+    int out_mask;
+    int* p;
+    int step;
+    int val;
+    int mix_vol;
+    unsigned char* pbuf;
+
+    if (shm->samplebits == 16 && shm->channels == 2) {
+        S_TransferStereo16(endtime);
+
+        return;
+    }
+
+    p = (int*)paintbuffer;
+    count = (endtime - paintedtime) * shm->channels;
+    out_mask = shm->samples - 1;
+    out_idx = paintedtime * shm->channels & out_mask;
+    step = 3 - shm->channels;
+    mix_vol = volume.value * 256;
+
+    {
+        pbuf = (unsigned char*)shm->buffer;
+    }
+
+    if (shm->samplebits == 16) {
+        short* out = (short*)pbuf;
+        while (count--) {
+            val = (*p * mix_vol) >> 8;
+            p += step;
+            if (val > 0x7fff) {
+                val = 0x7fff;
+            } else if (val < -32768) {
+                val = -32768;
+            }
+
+            out[out_idx] = val;
+            out_idx = (out_idx + 1) & out_mask;
+        }
+    } else if (shm->samplebits == 8) {
+        unsigned char* out = (unsigned char*)pbuf;
+        while (count--) {
+            val = (*p * mix_vol) >> 8;
+            p += step;
+            if (val > 0x7fff) {
+                val = 0x7fff;
+            } else if (val < -32768) {
+                val = -32768;
+            }
+
+            out[out_idx] = (val >> 8) + 128;
+            out_idx = (out_idx + 1) & out_mask;
+        }
+    }
+
+}
+
+/*
+===============================================================================
+
+CHANNEL MIXING
+
+===============================================================================
+*/
+
+void SND_PaintChannelFrom8(channel_t* ch, sfxcache_t* sc, int count, int offset);
+void SND_PaintChannelFrom16(channel_t* ch, sfxcache_t* sc, int count, int offset);
+
+void S_PaintChannels(int endtime)
+{
+    int i;
+    int end;
+    channel_t* ch;
+    sfxcache_t* sc;
+    int ltime, count;
+
+    while (paintedtime < endtime) {
+        // if paintbuffer is smaller than DMA buffer
+        end = endtime;
+        if (endtime - paintedtime > PAINTBUFFER_SIZE) {
+            end = paintedtime + PAINTBUFFER_SIZE;
+        }
+
+        // clear the paint buffer
+        Q_memset(paintbuffer, 0,
+            (end - paintedtime) * sizeof(portable_samplepair_t));
+
+        // paint in the channels.
+        ch = channels;
+        for (i = 0; i < total_channels; i++, ch++) {
+            if (!ch->sfx) {
+                continue;
+            }
+
+            if (!ch->leftvol && !ch->rightvol) {
+                continue;
+            }
+
+            sc = S_LoadSound(ch->sfx);
+            if (!sc) {
+                continue;
+            }
+
+            ltime = paintedtime;
+
+            while (ltime < end) { // paint up to end
+                if (ch->end < end) {
+                    count = ch->end - ltime;
+                } else {
+                    count = end - ltime;
+                }
+
+                if (count > 0) {
+                    if (sc->width == 1) {
+                        SND_PaintChannelFrom8(ch, sc, count, ltime - paintedtime);
+                    } else {
+                        SND_PaintChannelFrom16(ch, sc, count, ltime - paintedtime);
+                    }
+
+                    ltime += count;
+                }
+
+                // if at end of loop, restart
+                if (ltime >= ch->end) {
+                    if (sc->loopstart >= 0) {
+                        ch->pos = sc->loopstart;
+                        ch->end = ltime + sc->length - ch->pos;
+                    } else { // channel just stopped
+                        ch->sfx = NULL;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // transfer out according to DMA format
+        S_TransferPaintBuffer(end);
+        paintedtime = end;
+    }
+}
+
+void SND_InitScaletable(void)
+{
+    int i, j;
+
+    for (i = 0; i < 32; i++) {
+        for (j = 0; j < 256; j++) {
+            snd_scaletable[i][j] = ((signed char)j) * i * 8;
+        }
+    }
+}
+
+void SND_PaintChannelFrom8(channel_t* ch, sfxcache_t* sc, int count, int offset)
+{
+    int data;
+    int *lscale, *rscale;
+    unsigned char* sfx;
+    int i;
+
+    if (ch->leftvol > 255) {
+        ch->leftvol = 255;
+    }
+
+    if (ch->rightvol > 255) {
+        ch->rightvol = 255;
+    }
+
+    lscale = snd_scaletable[ch->leftvol >> 3];
+    rscale = snd_scaletable[ch->rightvol >> 3];
+    sfx = (unsigned char*)sc->data + ch->pos;
+
+    for (i = 0; i < count; i++) {
+        data = sfx[i];
+        paintbuffer[offset + i].left += lscale[data];
+        paintbuffer[offset + i].right += rscale[data];
+    }
+
+    ch->pos += count;
+}
+
+void SND_PaintChannelFrom16(channel_t* ch, sfxcache_t* sc, int count, int offset)
+{
+    int data;
+    int left, right;
+    int leftvol, rightvol;
+    signed short* sfx;
+    int i;
+
+    leftvol = ch->leftvol;
+    rightvol = ch->rightvol;
+    sfx = (signed short*)sc->data + ch->pos;
+
+    for (i = 0; i < count; i++) {
+        data = sfx[i];
+        left = (data * leftvol) >> 8;
+        right = (data * rightvol) >> 8;
+        paintbuffer[offset + i].left += left;
+        paintbuffer[offset + i].right += right;
+    }
+
+    ch->pos += count;
+}
+
+// ============================================================================
+// snd_sdl.cpp -- SDL audio output driver
+// ============================================================================
+
+#include <stdio.h>
+#include <SDL.h>
+
+static dma_t the_shm;
+static int snd_inited;
+
+static void paint_audio(void* /*unused*/, Uint8* stream, int len)
+{
+    if (shm) {
+        shm->buffer = stream;
+        shm->samplepos += len / (shm->samplebits / 8) / 2;
+        // Check for samplepos overflow?
+        S_PaintChannels(shm->samplepos);
+    }
+}
+
+qboolean SNDDMA_Init(void)
+{
+    SDL_AudioSpec desired;
+
+    snd_inited = 0;
+
+    /* Set up the desired format */
+    desired.freq = desired_speed;
+    switch (desired_bits) {
+    case 8:
+        desired.format = AUDIO_U8;
+        break;
+    case 16:
+        if (SDL_BYTEORDER == SDL_BIG_ENDIAN) {
+            desired.format = AUDIO_S16MSB;
+        } else {
+            desired.format = AUDIO_S16LSB;
+        }
+
+        break;
+    default:
+        Con_Printf("Unknown number of audio bits: %d\n", desired_bits);
+
+        return 0;
+    }
+    desired.channels = 2;
+    desired.samples = 512;
+    desired.callback = paint_audio;
+
+    /* Open the audio device */
+    if (SDL_OpenAudio(&desired, NULL) < 0) {
+        Con_Printf("Couldn't open SDL audio: %s\n", SDL_GetError());
+
+        return 0;
+    }
+    SDL_PauseAudio(0);
+
+    /* Fill the audio DMA information block */
+    shm = &the_shm;
+    shm->splitbuffer = 0;
+    shm->samplebits = (desired.format & 0xFF);
+    shm->speed = desired.freq;
+    shm->channels = desired.channels;
+    shm->samples = desired.samples * shm->channels;
+    shm->samplepos = 0;
+    shm->submission_chunk = 1;
+    shm->buffer = NULL;
+
+    snd_inited = 1;
+
+    return 1;
+}
+
+void SNDDMA_Shutdown(void)
+{
+    if (snd_inited) {
+        SDL_CloseAudio();
+        snd_inited = 0;
+    }
 }

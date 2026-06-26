@@ -26,26 +26,15 @@ FetchContent_MakeAvailable(SDL2)
 set(CORE_SRCS
     src/cd_sdl.cpp
     src/chase.cpp
-    src/cl_demo.cpp
-    src/cl_input.cpp
-    src/cl_main.cpp
-    src/cl_parse.cpp
-    src/cl_tent.cpp
+    src/client.cpp
     src/cmd.cpp
     src/common.cpp
     src/console.cpp
     src/crc.cpp
     src/cvar.cpp
-    src/d_edge.cpp
-    src/d_init.cpp
-    src/d_modech.cpp
-    src/d_part.cpp
-    src/d_polyse.cpp
-    src/d_scan.cpp
-    src/d_sky.cpp
-    src/d_sprite.cpp
-    src/d_surf.cpp
-    src/d_vars.cpp
+    src/audio.cpp
+    src/rasterizer.cpp
+    src/renderer.cpp
     src/draw.cpp
     src/host.cpp
     src/host_cmd.cpp
@@ -53,39 +42,11 @@ set(CORE_SRCS
     src/mathlib.cpp
     src/menu.cpp
     src/model.cpp
-    src/net_bsd.cpp
-    src/net_dgrm.cpp
-    src/net_loop.cpp
-    src/net_main.cpp
-    src/net_udp.cpp
-    src/net_vcr.cpp
-    src/pr_cmds.cpp
-    src/pr_edict.cpp
-    src/pr_exec.cpp
-    src/r_aclip.cpp
-    src/r_alias.cpp
-    src/r_bsp.cpp
-    src/r_draw.cpp
-    src/r_edge.cpp
-    src/r_efrag.cpp
-    src/r_light.cpp
-    src/r_main.cpp
-    src/r_misc.cpp
-    src/r_part.cpp
-    src/r_sky.cpp
-    src/r_sprite.cpp
-    src/r_surf.cpp
-    src/r_vars.cpp
+    src/network.cpp
+    src/vm.cpp
     src/sbar.cpp
     src/screen.cpp
-    src/snd_dma.cpp
-    src/snd_mem.cpp
-    src/snd_mix.cpp
-    src/snd_sdl.cpp
-    src/sv_main.cpp
-    src/sv_move.cpp
-    src/sv_phys.cpp
-    src/sv_user.cpp
+    src/server.cpp
     src/sys_sdl.cpp
     src/vid_sdl.cpp
     src/view.cpp

@@ -1,7 +1,7 @@
 // r_local.h -- private refresh defs
 
 
-#include "r_shared.h"
+#include "r_shared.hpp"
 
 #define ALIAS_BASE_SIZE_RATIO (1.0 / 11.0)
 // normalizing factor so player model works out to about

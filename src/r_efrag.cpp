@@ -1,7 +1,7 @@
 // r_efrag.cpp -- entity fragment list management
 
-#include "quakedef.h"
-#include "r_local.h"
+#include "quakedef.hpp"
+#include "r_local.hpp"
 
 mnode_t* r_pefragtopnode;
 

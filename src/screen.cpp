@@ -1,7 +1,7 @@
 // screen.cpp -- master for refresh, status bar, console, chat, notify, etc
 
-#include "quakedef.h"
-#include "r_local.h"
+#include "quakedef.hpp"
+#include "r_local.hpp"
 
 // only the refresh window will be updated unless these variables are flagged
 int scr_copytop;

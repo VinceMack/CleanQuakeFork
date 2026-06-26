@@ -1,7 +1,7 @@
 // net_vcr.cpp -- VCR demo recording and playback
 
-#include "quakedef.h"
-#include "net_vcr.h"
+#include "quakedef.hpp"
+#include "net_vcr.hpp"
 
 extern int vcrFile;
 

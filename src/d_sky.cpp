@@ -1,8 +1,8 @@
 // d_sky.cpp -- software sky texture coordinate calculation
 
-#include "quakedef.h"
-#include "r_local.h"
-#include "d_local.h"
+#include "quakedef.hpp"
+#include "r_local.hpp"
+#include "d_local.hpp"
 
 #define SKY_SPAN_SHIFT 5
 #define SKY_SPAN_MAX (1 << SKY_SPAN_SHIFT)

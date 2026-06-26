@@ -1,6 +1,6 @@
 // common.cpp -- misc functions used in client and server
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 #define NUM_SAFE_ARGVS 7
 

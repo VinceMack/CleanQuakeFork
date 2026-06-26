@@ -1,6 +1,6 @@
 // cl_demo.cpp -- demo playback and recording
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 void CL_FinishTimeDemo(void);
 

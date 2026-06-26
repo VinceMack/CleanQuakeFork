@@ -1,8 +1,8 @@
 // d_scan.cpp -- portable C scan-level rasterization code
 
-#include "quakedef.h"
-#include "r_local.h"
-#include "d_local.h"
+#include "quakedef.hpp"
+#include "r_local.hpp"
+#include "d_local.hpp"
 
 unsigned char *r_turb_pbase, *r_turb_pdest;
 fixed16_t r_turb_s, r_turb_t, r_turb_sstep, r_turb_tstep;

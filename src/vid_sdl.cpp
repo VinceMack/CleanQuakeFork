@@ -1,12 +1,12 @@
 // vid_sdl.cpp -- SDL video driver
 
 #include "SDL.h"
-#include "quakedef.h"
-#include "d_local.h"
+#include "quakedef.hpp"
+#include "d_local.hpp"
 
 unsigned short d_8to16table[256];
 
-#include "winquake.h"
+#include "winquake.hpp"
 modestate_t modestate = MS_WINDOWED;
 cvar_t _windowed_mouse = {"_windowed_mouse", "1"};
 

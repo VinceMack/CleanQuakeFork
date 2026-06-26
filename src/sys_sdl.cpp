@@ -13,7 +13,7 @@
 
 #include <SDL.h>
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 qboolean isDedicated;
 

@@ -1,7 +1,7 @@
 // r_part.cpp -- particle system rendering
 
-#include "quakedef.h"
-#include "r_local.h"
+#include "quakedef.hpp"
+#include "r_local.hpp"
 
 #define MAX_PARTICLES 2048 // default max # of particles at one
 //  time

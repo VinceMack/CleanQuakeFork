@@ -2,8 +2,8 @@
 
 #include <limits.h>
 
-#include "quakedef.h"
-#include "r_local.h"
+#include "quakedef.hpp"
+#include "r_local.hpp"
 
 edge_t* auxedges;
 edge_t *r_edges, *edge_p, *edge_max;

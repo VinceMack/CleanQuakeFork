@@ -1,6 +1,6 @@
 // cvar.cpp -- dynamic variable tracking
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 cvar_t* cvar_vars;
 char* cvar_null_string = "";

@@ -1,8 +1,8 @@
 // r_draw.cpp -- span drawing and surface cache management
 
-#include "quakedef.h"
-#include "r_local.h"
-#include "d_local.h" // FIXME: shouldn't need to include this
+#include "quakedef.hpp"
+#include "r_local.hpp"
+#include "d_local.hpp" // FIXME: shouldn't need to include this
 
 #define MAXLEFTCLIPEDGES 100
 

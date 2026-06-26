@@ -1,6 +1,6 @@
 // keys.cpp -- keyboard input handling and key binding
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 /*
 

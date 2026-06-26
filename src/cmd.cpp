@@ -1,6 +1,6 @@
 // cmd.cpp -- Quake script command processing module
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 void Cmd_ForwardToServer(void);
 

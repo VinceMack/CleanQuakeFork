@@ -1,8 +1,8 @@
 // d_sprite.cpp: software top-level rasterization driver module for drawing
 // sprites
 
-#include "quakedef.h"
-#include "d_local.h"
+#include "quakedef.hpp"
+#include "d_local.hpp"
 
 static int sprite_height;
 static int minindex, maxindex;

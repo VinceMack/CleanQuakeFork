@@ -1,6 +1,6 @@
 // sv_user.cpp -- server code for moving users
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 edict_t* sv_player;
 

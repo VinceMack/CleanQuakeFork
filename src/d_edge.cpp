@@ -1,7 +1,7 @@
 // d_edge.cpp -- software edge rendering (mipmapping and texture stepping)
 
-#include "quakedef.h"
-#include "d_local.h"
+#include "quakedef.hpp"
+#include "d_local.hpp"
 
 static int miplevel;
 

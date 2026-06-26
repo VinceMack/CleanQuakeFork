@@ -2,7 +2,7 @@
 
 #include <SDL.h>
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 static qboolean cdValid = false;
 static qboolean initialized = false;

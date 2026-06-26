@@ -1,6 +1,6 @@
 // net_udp.cpp -- UDP network socket driver
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -31,7 +31,7 @@ static struct qsockaddr broadcastaddr;
 
 static unsigned long myAddr;
 
-#include "net_udp.h"
+#include "net_udp.hpp"
 
 //=============================================================================
 

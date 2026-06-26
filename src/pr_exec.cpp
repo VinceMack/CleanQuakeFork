@@ -1,6 +1,6 @@
 // pr_exec.cpp -- QuakeC virtual machine execution engine
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 typedef struct {
     int s;

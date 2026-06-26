@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <SDL.h>
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 static dma_t the_shm;
 static int snd_inited;

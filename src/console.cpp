@@ -2,7 +2,7 @@
 
 #include <io.h>
 #include <fcntl.h>
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 int con_linewidth;
 

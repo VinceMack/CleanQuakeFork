@@ -1,7 +1,7 @@
 // r_sprite.cpp -- sprite rendering setup and transformation
 
-#include "quakedef.h"
-#include "r_local.h"
+#include "quakedef.hpp"
+#include "r_local.hpp"
 
 static int clip_current;
 static vec5_t clip_verts[2][MAXWORKINGVERTS];

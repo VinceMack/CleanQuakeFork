@@ -8,16 +8,16 @@
 
 #ifdef INCLUDELIBS
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
+#include <stdlib.hpp>
+#include <stdio.hpp>
+#include <math.hpp>
+#include <string.hpp>
 
-#include "cmdlib.h"
-#include "scriplib.h"
-#include "trilib.h"
-#include "lbmlib.h"
-#include "mathlib.h"
+#include "cmdlib.hpp"
+#include "scriplib.hpp"
+#include "trilib.hpp"
+#include "lbmlib.hpp"
+#include "mathlib.hpp"
 
 #endif
 

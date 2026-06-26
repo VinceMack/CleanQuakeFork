@@ -1,7 +1,7 @@
 // r_bsp.cpp -- BSP tree traversal and polygon generation
 
-#include "quakedef.h"
-#include "r_local.h"
+#include "quakedef.hpp"
+#include "r_local.hpp"
 
 //
 // current entity info

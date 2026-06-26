@@ -1,6 +1,6 @@
 // cl_parse.cpp  -- parse a message received from the server
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 char* svc_strings[] = {
     "svc_bad", "svc_nop", "svc_disconnect", "svc_updatestat",

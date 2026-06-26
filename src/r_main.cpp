@@ -1,7 +1,7 @@
 // r_main.cpp -- main refresh rendering loop
 
-#include "quakedef.h"
-#include "r_local.h"
+#include "quakedef.hpp"
+#include "r_local.hpp"
 
 //define	PASSAGES
 

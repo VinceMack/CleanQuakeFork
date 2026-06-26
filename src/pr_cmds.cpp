@@ -1,6 +1,6 @@
 // pr_cmds.cpp -- built-in QuakeC function implementations
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 #define RETURN_EDICT(e) (((int*)pr_globals)[OFS_RETURN] = EDICT_TO_PROG(e))
 

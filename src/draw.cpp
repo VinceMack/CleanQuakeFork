@@ -1,7 +1,7 @@
 // draw.cpp -- this is the only file outside the refresh that touches the
 // vid buffer
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 typedef struct {
     vrect_t rect;

@@ -1,6 +1,6 @@
 // cl.input.cpp  -- builds an intended movement command to send to the server
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 /*
 ===============================================================================

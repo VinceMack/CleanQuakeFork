@@ -31,8 +31,8 @@ struct sockaddr_in {
 char* inet_ntoa(struct in_addr in);
 unsigned long inet_addr(const char* cp);
 
-#include "quakedef.h"
-#include "net_dgrm.h"
+#include "quakedef.hpp"
+#include "net_dgrm.hpp"
 
 // these two macros are to make the code more readable
 #define sfunc net_landrivers[sock->landriver]

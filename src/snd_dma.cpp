@@ -1,6 +1,6 @@
 // snd_dma.cpp -- main control for any streaming sound output device
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 
 void S_Play(void);

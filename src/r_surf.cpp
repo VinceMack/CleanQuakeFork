@@ -1,7 +1,7 @@
 // r_surf.cpp: surface-related refresh code
 
-#include "quakedef.h"
-#include "r_local.h"
+#include "quakedef.hpp"
+#include "r_local.hpp"
 
 drawsurf_t r_drawsurf;
 

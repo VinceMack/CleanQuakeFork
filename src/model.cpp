@@ -3,8 +3,8 @@
 // models are the only shared resource between a client and server running
 // on the same machine.
 
-#include "quakedef.h"
-#include "r_local.h"
+#include "quakedef.hpp"
+#include "r_local.hpp"
 
 model_t* loadmodel;
 char loadname[32]; // for hunk tags

@@ -1,6 +1,6 @@
 // cl_main.cpp  -- client main loop
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.

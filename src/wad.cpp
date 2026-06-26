@@ -1,6 +1,6 @@
 // wad.cpp -- WAD archive loading and lump management
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 int wad_numlumps;
 lumpinfo_t* wad_lumps;

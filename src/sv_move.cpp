@@ -1,6 +1,6 @@
 // sv_move.cpp -- monster movement
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 #define STEPSIZE 18
 

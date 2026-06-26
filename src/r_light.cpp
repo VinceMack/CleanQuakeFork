@@ -1,7 +1,7 @@
 // r_light.cpp -- dynamic light and light animation
 
-#include "quakedef.h"
-#include "r_local.h"
+#include "quakedef.hpp"
+#include "r_local.hpp"
 
 int r_dlightframecount;
 

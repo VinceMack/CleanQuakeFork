@@ -3,8 +3,8 @@
 #ifndef __MODEL__
 #define __MODEL__
 
-#include "modelgen.h"
-#include "spritegn.h"
+#include "modelgen.hpp"
+#include "spritegn.hpp"
 
 /*
 

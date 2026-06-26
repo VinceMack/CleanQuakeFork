@@ -1,6 +1,6 @@
 // r_vars.cpp: global refresh variables
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 // all global and static refresh variables are collected in a contiguous block
 // to avoid cache conflicts.

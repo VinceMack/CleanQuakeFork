@@ -1,7 +1,7 @@
 // zone.cpp -- memory allocation (hunk and cache) management
 
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 #include <stdlib.h>
 
 #define DYNAMIC_SIZE 0x100000

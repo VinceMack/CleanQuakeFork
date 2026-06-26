@@ -1,6 +1,6 @@
 // sv_main.cpp -- server main program
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 server_t sv;
 server_static_t svs;

@@ -1,6 +1,6 @@
 // d_vars.cpp -- software rasterizer global variables
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 // all global and static refresh variables are collected in a contiguous block
 // to avoid cache conflicts.

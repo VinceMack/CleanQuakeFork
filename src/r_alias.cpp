@@ -1,8 +1,8 @@
 // r_alias.cpp: routines for setting up to draw alias models
 
-#include "quakedef.h"
-#include "r_local.h"
-#include "d_local.h" // FIXME: shouldn't be needed (is needed for patch
+#include "quakedef.hpp"
+#include "r_local.hpp"
+#include "d_local.hpp" // FIXME: shouldn't be needed (is needed for patch
 // right now, but that should move)
 
 #define LIGHT_MIN 5 // lowest light value we'll allow, to avoid the
@@ -49,7 +49,7 @@ static aedge_t aedges[12] = { { 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 0 }, { 4, 5 }, 
 float r_avertexnormals[NUMVERTEXNORMALS][3] = {
 #pragma warning(push)
 #pragma warning(disable : 4305)
-#include "anorms.h"
+#include "anorms.hpp"
 #pragma warning(pop)
 };
 

@@ -1,6 +1,6 @@
 // world.cpp -- world query functions
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 /*
 

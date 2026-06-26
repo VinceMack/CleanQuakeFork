@@ -1,6 +1,6 @@
 // host_cmd.cpp -- console command implementations for host management
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 extern cvar_t pausable;
 

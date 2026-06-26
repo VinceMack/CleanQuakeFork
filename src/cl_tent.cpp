@@ -1,6 +1,6 @@
 // cl_tent.cpp -- client side temporary entities
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 int num_temp_entities;
 entity_t cl_temp_entities[MAX_TEMP_ENTITIES];

@@ -1,8 +1,8 @@
 // d_surf.cpp: rasterization driver surface heap manager
 
-#include "quakedef.h"
-#include "d_local.h"
-#include "r_local.h"
+#include "quakedef.hpp"
+#include "d_local.hpp"
+#include "r_local.hpp"
 
 float surfscale;
 qboolean r_cache_thrash; // set if surface cache is thrashing

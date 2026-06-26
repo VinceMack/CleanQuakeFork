@@ -1,6 +1,6 @@
 // sbar.cpp -- status bar code
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 int sb_updates; // if >= vid.numpages, no update needed
 

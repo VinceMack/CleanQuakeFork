@@ -1,7 +1,7 @@
 // net_loop.cpp -- loopback network driver for local game
 
-#include "quakedef.h"
-#include "net_loop.h"
+#include "quakedef.hpp"
+#include "net_loop.hpp"
 
 qboolean localconnectpending = false;
 qsocket_t* loop_client = NULL;

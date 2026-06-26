@@ -1,6 +1,6 @@
 // pr_edict.cpp -- entity dictionary and progs data management
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 dprograms_t* progs;
 dfunction_t* pr_functions;

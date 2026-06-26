@@ -1,7 +1,7 @@
 // net_main.cpp -- network initialization and socket management
 
-#include "quakedef.h"
-#include "net_vcr.h"
+#include "quakedef.hpp"
+#include "net_vcr.hpp"
 #include <stdint.h>
 
 qsocket_t* net_activeSockets = NULL;

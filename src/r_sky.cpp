@@ -1,8 +1,8 @@
 // r_sky.cpp -- sky rendering
 
-#include "quakedef.h"
-#include "r_local.h"
-#include "d_local.h"
+#include "quakedef.hpp"
+#include "r_local.hpp"
+#include "d_local.hpp"
 
 int iskyspeed = 8;
 int iskyspeed2 = 2;

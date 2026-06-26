@@ -1,6 +1,6 @@
 // snd_mem.cpp: sound caching
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 int cache_full_cycle;
 

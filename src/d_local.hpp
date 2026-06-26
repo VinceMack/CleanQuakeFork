@@ -1,6 +1,6 @@
 // d_local.h:  private rasterization driver defs
 
-#include "r_shared.h"
+#include "r_shared.hpp"
 
 //
 // TODO: fine-tune this; it's based on providing some overage even if there

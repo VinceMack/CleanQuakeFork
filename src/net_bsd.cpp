@@ -1,9 +1,9 @@
 // net_bsd.cpp -- network driver registration table
 
-#include "quakedef.h"
+#include "quakedef.hpp"
 
-#include "net_loop.h"
-#include "net_dgrm.h"
+#include "net_loop.hpp"
+#include "net_dgrm.hpp"
 
 net_driver_t net_drivers[MAX_NET_DRIVERS] = {
     { "Loopback", false, Loop_Init, Loop_Listen, Loop_SearchForHosts,
@@ -19,7 +19,7 @@ net_driver_t net_drivers[MAX_NET_DRIVERS] = {
 
 int net_numdrivers = 2;
 
-#include "net_udp.h"
+#include "net_udp.hpp"
 
 net_landriver_t net_landrivers[MAX_NET_DRIVERS] = { { "UDP",
     false,

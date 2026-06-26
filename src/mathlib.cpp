@@ -1,7 +1,7 @@
 // mathlib.cpp -- math primitives
 
 #include <math.h>
-#include "quakedef.h"
+#include "quakedef.hpp"
 
 [[noreturn]] void Sys_Error(char* error, ...);
 

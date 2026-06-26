@@ -24,8 +24,7 @@
 
 extern void R_DrawLine(polyvert_t* polyvert0, polyvert_t* polyvert1);
 
-extern int cachewidth;
-extern pixel_t* cacheblock;
+
 extern int screenwidth;
 
 extern float pixelAspect;
@@ -106,8 +105,6 @@ extern void SetUpForLineScan(fixed8_t startvertu,
 
 extern int r_skymade;
 extern void R_MakeSky(void);
-
-extern int ubasestep, errorterm, erroradjustup, erroradjustdown;
 
 // flags in finalvert_t.flags
 #define ALIAS_LEFT_CLIP 0x0001

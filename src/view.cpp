@@ -221,7 +221,7 @@ void V_DriftPitch(void)
 */
 
 cshift_t cshift_empty = { { 130, 80, 50 }, 0 };
-cshift_t cshift_water = { { 130, 80, 50 }, 128 };
+static cshift_t cshift_water = { { 130, 80, 50 }, 128 };
 cshift_t cshift_slime = { { 0, 25, 5 }, 150 };
 cshift_t cshift_lava = { { 255, 80, 0 }, 150 };
 

@@ -33,20 +33,7 @@ typedef struct sspan_s {
     int u, v, count;
 } sspan_t;
 
-extern cvar_t d_subdiv16;
 
-extern float scale_for_mip;
-
-extern qboolean d_roverwrapped;
-extern surfcache_t* sc_rover;
-extern surfcache_t* d_initial_rover;
-
-extern float d_sdivzstepu, d_tdivzstepu, d_zistepu;
-extern float d_sdivzstepv, d_tdivzstepv, d_zistepv;
-extern float d_sdivzorigin, d_tdivzorigin, d_ziorigin;
-
-extern fixed16_t sadjust, tadjust;
-extern fixed16_t bbextents, bbextentt;
 
 void D_DrawSpans8(espan_t* pspans);
 void D_DrawSpans16(espan_t* pspans);
@@ -58,26 +45,6 @@ void D_DrawSkyScans8(espan_t* pspan);
 void D_DrawSkyScans16(espan_t* pspan);
 
 void R_ShowSubDiv(void);
-extern void (*prealspandrawer)(void);
 surfcache_t* D_CacheSurface(msurface_t* surface, int miplevel);
 
-extern int D_MipLevelForScale(float scale);
-
 extern short* d_pzbuffer;
-extern unsigned int d_zrowbytes, d_zwidth;
-
-extern int* d_pscantable;
-extern int d_scantable[MAXHEIGHT];
-
-extern int d_vrectx, d_vrecty, d_vrectright_particle, d_vrectbottom_particle;
-
-extern int d_y_aspect_shift, d_pix_min, d_pix_max, d_pix_shift;
-
-extern pixel_t* d_viewbuffer;
-
-extern short* zspantable[MAXHEIGHT];
-
-extern int d_minmip;
-extern float d_scalemip[3];
-
-extern void (*d_drawspans)(espan_t* pspan);

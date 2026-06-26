@@ -8,8 +8,10 @@
 #include "r_local.hpp"
 
 // ==============================================================
-// Global variables
+// Global variables (TU-local via anonymous namespace)
 // ==============================================================
+
+namespace {
 
 // d_vars.cpp
 float d_sdivzstepu, d_tdivzstepu, d_zistepu;
@@ -23,9 +25,6 @@ void (*prealspandrawer)(void);
 pixel_t* cacheblock;
 int cachewidth;
 pixel_t* d_viewbuffer;
-short* d_pzbuffer;
-unsigned int d_zrowbytes;
-unsigned int d_zwidth;
 
 // d_init.cpp
 #define NUM_MIPS 4
@@ -62,7 +61,6 @@ vec3_t transformed_modelorg;
 
 // d_surf.cpp
 float surfscale;
-qboolean r_cache_thrash;
 
 int sc_size;
 surfcache_t *sc_rover, *sc_base;
@@ -72,6 +70,14 @@ unsigned char *r_turb_pbase, *r_turb_pdest;
 fixed16_t r_turb_s, r_turb_t, r_turb_sstep, r_turb_tstep;
 int* r_turb_turb;
 int r_turb_spancount;
+
+} // namespace
+
+// Shared global variables (visible to other TUs)
+short* d_pzbuffer;
+unsigned int d_zrowbytes;
+unsigned int d_zwidth;
+qboolean r_cache_thrash;
 
 // d_polyse.cpp
 

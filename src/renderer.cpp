@@ -4,6 +4,75 @@
 #include "r_local.hpp"
 #include "d_local.hpp"
 
+namespace {
+    int r_bmodelactive;
+    mnode_t* r_pefragtopnode;
+    vec3_t r_emins, r_emaxs;
+    int r_dlightframecount;
+    int c_faceclip;
+    clipplane_t view_clipplanes[4];
+    edge_t* auxedges;
+    edge_t *r_edges, *edge_p, *edge_max;
+    edge_t* newedges[MAXHEIGHT];
+    edge_t* removeedges[MAXHEIGHT];
+    int r_currentkey;
+    edge_t edge_head;
+    edge_t edge_tail;
+    edge_t edge_aftertail;
+    vec3_t r_entorigin;
+    float entity_rotation[3][3];
+    vec3_t r_worldmodelorg;
+    int r_currentbkey;
+    mtriangle_t* ptriangles;
+    mdl_t* pmdl;
+    aliashdr_t* paliashdr;
+    finalvert_t* pfinalverts;
+    auxvert_t* pauxverts;
+    int r_amodels_drawn;
+    int a_skinwidth;
+    float r_time1;
+    int r_numallocatededges;
+    int r_outofsurfaces;
+    int r_outofedges;
+    qboolean r_dowarpold, r_viewchanged;
+    int numbtofpolys;
+    btofpoly_t* pbtofpolys;
+    mvertex_t* r_pcurrentvertbase;
+    int r_maxsurfsseen, r_maxedgesseen, r_cnumsurfs;
+    qboolean r_surfsonstack;
+    int r_clipflags;
+    qboolean r_fov_greater_than_90;
+    float aliasxscale, aliasyscale, aliasxcenter, aliasycenter;
+    float screenAspect;
+    float verticalFieldOfView;
+    float xOrigin, yOrigin;
+    mplane_t screenedge[4];
+    int r_visframecount;
+    int r_polycount;
+    int r_wholepolycount;
+    int* pfrustum_indexes[4];
+    int r_frustum_indexes[4 * 6];
+    mleaf_t *r_viewleaf, *r_oldviewleaf;
+    float r_aliastransition, r_resfudge;
+    float dp_time1, dp_time2, db_time1, db_time2, rw_time1, rw_time2;
+    float se_time1, se_time2, de_time1, de_time2, dv_time1, dv_time2;
+    cvar_t r_draworder = { "r_draworder", "0" };
+    cvar_t r_speeds = { "r_speeds", "0" };
+    cvar_t r_timegraph = { "r_timegraph", "0" };
+    cvar_t r_graphheight = { "r_graphheight", "10" };
+    cvar_t r_waterwarp = { "r_waterwarp", "1" };
+    cvar_t r_fullbright = { "r_fullbright", "0" };
+    cvar_t r_drawentities = { "r_drawentities", "1" };
+    cvar_t r_aliasstats = { "r_polymodelstats", "0" };
+    cvar_t r_dspeeds = { "r_dspeeds", "0" };
+    cvar_t r_ambient = { "r_ambient", "0" };
+    cvar_t r_reportsurfout = { "r_reportsurfout", "0" };
+    cvar_t r_maxsurfs = { "r_maxsurfs", "0" };
+    cvar_t r_numsurfs = { "r_numsurfs", "0" };
+    cvar_t r_reportedgeout = { "r_reportedgeout", "0" };
+    cvar_t r_maxedges = { "r_maxedges", "0" };
+    cvar_t r_numedges = { "r_numedges", "0" };
+}
 
 // ============================================================
 // Content from: src\r_vars.cpp
@@ -19,15 +88,10 @@
 //-------------------------------------------------------
 
 
-int r_bmodelactive;
-
-
 // ============================================================
 // Content from: src\r_efrag.cpp
 // ============================================================
 
-
-mnode_t* r_pefragtopnode;
 
 //===========================================================================
 
@@ -40,8 +104,6 @@ mnode_t* r_pefragtopnode;
 */
 
 efrag_t** lastlink;
-
-vec3_t r_emins, r_emaxs;
 
 entity_t* r_addent;
 
@@ -277,8 +339,6 @@ void R_StoreEfrags(efrag_t** ppefrag)
 // Content from: src\r_light.cpp
 // ============================================================
 
-
-int r_dlightframecount;
 
 /*
 ==================
@@ -2033,6 +2093,16 @@ void R_TimeGraph(void)
 
 /*
 =============
+R_PrintAliasStats
+================
+*/
+void R_PrintAliasStats(void)
+{
+    Con_Printf("%3i polygon model drawn\n", r_amodels_drawn);
+}
+
+/*
+=============
 R_PrintTimes
 =============
 */
@@ -2294,14 +2364,11 @@ void R_SetupFrame(void)
 
 unsigned int cacheoffset;
 
-int c_faceclip; // number of faces clipped
-
 zpointdesc_t r_zpointdesc;
 
 polydesc_t r_polydesc;
 
 clipplane_t* entity_clipplanes;
-clipplane_t view_clipplanes[4];
 clipplane_t world_clipplanes[16];
 
 medge_t* r_pedge;
@@ -3114,21 +3181,13 @@ void R_ZDrawSubmodelPolys(model_t* pmodel)
 #include <limits.h>
 
 
-edge_t* auxedges;
-edge_t *r_edges, *edge_p, *edge_max;
-
 surf_t *surfaces, *surface_p, *surf_max;
 
 // surfaces are generated in back to front order by the bsp, so if a surf
 // pointer is greater than another one, it should be drawn in front
 // surfaces[1] is the background, and is used as the active surface stack
 
-edge_t* newedges[MAXHEIGHT];
-edge_t* removeedges[MAXHEIGHT];
-
 espan_t *span_p, *max_span_p;
-
-int r_currentkey;
 
 extern int screenwidth;
 
@@ -3138,9 +3197,6 @@ int64_t edge_head_u_shift20, edge_tail_u_shift20; // Changed from int to int64_t
 
 static void (*pdrawfunc)(void);
 
-edge_t edge_head;
-edge_t edge_tail;
-edge_t edge_aftertail;
 edge_t edge_sentinel;
 
 float edge_fv;
@@ -3816,16 +3872,6 @@ void R_ScanEdges(void)
 qboolean insubmodel;
 entity_t* currententity;
 vec3_t modelorg, base_modelorg;
-// modelorg is the viewpoint reletive to
-// the currently rendering entity
-vec3_t r_entorigin; // the currently rendering entity in world
-// coordinates
-
-float entity_rotation[3][3];
-
-vec3_t r_worldmodelorg;
-
-int r_currentbkey;
 
 typedef enum { touchessolid,
     drawnode,
@@ -4763,30 +4809,21 @@ void R_DrawSprite(void)
 #define LIGHT_MIN 5 // lowest light value we'll allow, to avoid the
 //  need for inner-loop light clamping
 
-mtriangle_t* ptriangles;
 affinetridesc_t r_affinetridesc;
 
 void* acolormap; // FIXME: should go away
 
 trivertx_t* r_apverts;
 
-// TODO: these probably will go away with optimized rasterization
-mdl_t* pmdl;
 vec3_t r_plightvec;
 int r_ambientlight;
 float r_shadelight;
-aliashdr_t* paliashdr;
-finalvert_t* pfinalverts;
-auxvert_t* pauxverts;
 static float ziscale;
 static model_t* pmodel;
 
 static vec3_t alias_forward, alias_right, alias_up;
 
 static maliasskindesc_t* pskindesc;
-
-int r_amodels_drawn;
-int a_skinwidth;
 int r_anumverts;
 
 float aliastransform[3][4];
@@ -5770,33 +5807,20 @@ void R_AliasClipTriangle(mtriangle_t* ptri)
 void* colormap;
 vec3_t viewlightvec;
 alight_t r_viewlighting = { 128, 192, viewlightvec };
-float r_time1;
-int r_numallocatededges;
 qboolean r_drawpolys;
 qboolean r_drawculledpolys;
 qboolean r_worldpolysbacktofront;
 qboolean r_recursiveaffinetriangles = true;
 int r_pixbytes = 1;
 float r_aliasuvscale = 1.0;
-int r_outofsurfaces;
-int r_outofedges;
 
-qboolean r_dowarp, r_dowarpold, r_viewchanged;
-
-int numbtofpolys;
-btofpoly_t* pbtofpolys;
-mvertex_t* r_pcurrentvertbase;
+qboolean r_dowarp;
 
 int c_surf;
-int r_maxsurfsseen, r_maxedgesseen, r_cnumsurfs;
-qboolean r_surfsonstack;
-int r_clipflags;
 
 byte* r_warpbuffer;
 
 byte* r_stack_start;
-
-qboolean r_fov_greater_than_90;
 
 //
 // view origin
@@ -5814,69 +5838,33 @@ float xcenter, ycenter;
 float xscale, yscale;
 float xscaleinv, yscaleinv;
 float xscaleshrink, yscaleshrink;
-float aliasxscale, aliasyscale, aliasxcenter, aliasycenter;
-
 int screenwidth;
 
 float pixelAspect;
-float screenAspect;
-float verticalFieldOfView;
-float xOrigin, yOrigin;
-
-mplane_t screenedge[4];
 
 //
 // refresh flags
 //
 int r_framecount = 1; // so frame counts initialized to 0 don't match
-int r_visframecount;
 int d_spanpixcount;
-int r_polycount;
 int r_drawnpolycount;
-int r_wholepolycount;
 
 #define VIEWMODNAME_LENGTH 256
 char viewmodname[VIEWMODNAME_LENGTH + 1];
 int modcount;
 
-int* pfrustum_indexes[4];
-int r_frustum_indexes[4 * 6];
-
 int reinit_surfcache = 1; // if 1, surface cache is currently empty and
 // must be reinitialized for current cache size
 
-mleaf_t *r_viewleaf, *r_oldviewleaf;
-
 texture_t* r_notexture_mip;
-
-float r_aliastransition, r_resfudge;
 
 int d_lightstylevalue[256]; // 8.8 fraction of base light value
 
-float dp_time1, dp_time2, db_time1, db_time2, rw_time1, rw_time2;
-float se_time1, se_time2, de_time1, de_time2, dv_time1, dv_time2;
-
 void R_MarkLeaves(void);
 
-cvar_t r_draworder = { "r_draworder", "0" };
-cvar_t r_speeds = { "r_speeds", "0" };
-cvar_t r_timegraph = { "r_timegraph", "0" };
-cvar_t r_graphheight = { "r_graphheight", "10" };
 cvar_t r_clearcolor = { "r_clearcolor", "2" };
-cvar_t r_waterwarp = { "r_waterwarp", "1" };
-cvar_t r_fullbright = { "r_fullbright", "0" };
-cvar_t r_drawentities = { "r_drawentities", "1" };
 cvar_t r_drawviewmodel = { "r_drawviewmodel", "1" };
-cvar_t r_aliasstats = { "r_polymodelstats", "0" };
-cvar_t r_dspeeds = { "r_dspeeds", "0" };
 cvar_t r_drawflat = { "r_drawflat", "0" };
-cvar_t r_ambient = { "r_ambient", "0" };
-cvar_t r_reportsurfout = { "r_reportsurfout", "0" };
-cvar_t r_maxsurfs = { "r_maxsurfs", "0" };
-cvar_t r_numsurfs = { "r_numsurfs", "0" };
-cvar_t r_reportedgeout = { "r_reportedgeout", "0" };
-cvar_t r_maxedges = { "r_maxedges", "0" };
-cvar_t r_numedges = { "r_numedges", "0" };
 cvar_t r_aliastransbase = { "r_aliastransbase", "200" };
 cvar_t r_aliastransadj = { "r_aliastransadj", "100" };
 

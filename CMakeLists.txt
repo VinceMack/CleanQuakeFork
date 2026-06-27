@@ -66,6 +66,7 @@ target_link_libraries(clean-quake PRIVATE SDL2main SDL2-static ws2_32 winmm)
 if(MSVC)
     target_compile_options(clean-quake PRIVATE 
         /W4 
+        /Z7
         /w14702      # Force C4702 (Unreachable code) to be a Level 1 Warning
         /wd4996 /wd4244 /wd4113 /wd4047 /wd4024
     )

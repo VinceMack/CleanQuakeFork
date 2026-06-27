@@ -2,6 +2,8 @@
 
 #include "quakedef.hpp"
 
+namespace Client {
+
 //============================================================================
 // Global variable definitions
 //============================================================================
@@ -2665,3 +2667,5 @@ void CL_UpdateTEnts(void)
         }
     }
 }
+
+} // namespace Client

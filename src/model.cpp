@@ -6,6 +6,8 @@
 #include "quakedef.hpp"
 #include "r_local.hpp"
 
+namespace Model {
+
 model_t* loadmodel;
 char loadname[32]; // for hunk tags
 
@@ -1850,3 +1852,5 @@ void Mod_Print(void)
         Con_Printf("\n");
     }
 }
+
+} // namespace Model

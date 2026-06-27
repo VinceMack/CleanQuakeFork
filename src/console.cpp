@@ -4,6 +4,8 @@
 #include <fcntl.h>
 #include "quakedef.hpp"
 
+namespace Console {
+
 int con_linewidth;
 
 float con_cursorspeed = 4;
@@ -27,17 +29,11 @@ float con_times[NUM_CON_TIMES]; // realtime time the line was generated
 int con_vislines;
 
 qboolean con_debuglog;
-
 #define MAXCMDLINE 256
-extern char key_lines[32][MAXCMDLINE];
-extern int edit_line;
-extern int key_linepos;
 
 qboolean con_initialized;
 
 int con_notifylines; // scan lines to clear for notify lines
-
-extern void M_Menu_Main_f(void);
 
 /*
 ================
@@ -93,8 +89,6 @@ void Con_ClearNotify(void)
 Con_MessageMode_f
 ================
 */
-extern qboolean team_message;
-
 void Con_MessageMode_f(void)
 {
     key_dest = key_message;
@@ -467,9 +461,7 @@ void Con_DrawNotify(void)
     char* text;
     int i;
     float time;
-    extern char chat_buffer[];
-
-    v = 0;
+	v = 0;
     for (i = con_current - NUM_CON_TIMES + 1; i <= con_current; i++) {
         if (i < 0) {
             continue;
@@ -564,3 +556,5 @@ void Con_DrawConsole(int lines, qboolean drawinput)
         Con_DrawInput();
     }
 }
+
+} // namespace Console

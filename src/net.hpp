@@ -1,4 +1,5 @@
 // net.h -- quake's interface to the networking layer
+#pragma once
 
 struct qsockaddr {
     short sa_family;
@@ -125,11 +126,9 @@ typedef struct qsocket_s {
 
 } qsocket_t;
 
-namespace Net {
-
-extern qsocket_t* net_activeSockets;
-extern qsocket_t* net_freeSockets;
-extern int net_numsockets;
+// ============================================================================
+// Type definitions (global scope)
+// ============================================================================
 
 typedef struct {
     char* name;
@@ -156,8 +155,6 @@ typedef struct {
 } net_landriver_t;
 
 #define MAX_NET_DRIVERS 8
-extern int net_numlandrivers;
-extern net_landriver_t net_landrivers[MAX_NET_DRIVERS];
 
 typedef struct {
     char* name;
@@ -176,6 +173,50 @@ typedef struct {
     void (*Shutdown)(void);
     int controlSock;
 } net_driver_t;
+
+#define HOSTCACHESIZE 8
+
+typedef struct {
+    char name[16];
+    char map[16];
+    char cname[32];
+    int users;
+    int maxusers;
+    int driver;
+    int ldriver;
+    struct qsockaddr addr;
+} hostcache_t;
+
+typedef struct _PollProcedure {
+    struct _PollProcedure* next;
+    double nextTime;
+    void (*procedure)();
+    void* arg;
+} PollProcedure;
+
+#if !defined(_WIN32) && !defined(__linux__) && !defined(__sun__)
+#ifndef htonl
+extern unsigned long htonl(unsigned long hostlong);
+#endif
+#ifndef htons
+extern unsigned short htons(unsigned short hostshort);
+#endif
+#ifndef ntohl
+extern unsigned long ntohl(unsigned long netlong);
+#endif
+#ifndef ntohs
+extern unsigned short ntohs(unsigned short netshort);
+#endif
+#endif
+
+namespace Net {
+
+extern qsocket_t* net_activeSockets;
+extern qsocket_t* net_freeSockets;
+extern int net_numsockets;
+
+extern int net_numlandrivers;
+extern net_landriver_t net_landrivers[MAX_NET_DRIVERS];
 
 extern int net_numdrivers;
 extern net_driver_t net_drivers[MAX_NET_DRIVERS];
@@ -197,37 +238,8 @@ qsocket_t* NET_NewQSocket(void);
 void NET_FreeQSocket(qsocket_t*);
 double SetNetTime(void);
 
-#define HOSTCACHESIZE 8
-
-typedef struct {
-    char name[16];
-    char map[16];
-    char cname[32];
-    int users;
-    int maxusers;
-    int driver;
-    int ldriver;
-    struct qsockaddr addr;
-} hostcache_t;
-
 extern int hostCacheCount;
 extern hostcache_t hostcache[HOSTCACHESIZE];
-
-#if !defined(_WIN32) && !defined(__linux__) && !defined(__sun__)
-#ifndef htonl
-extern unsigned long htonl(unsigned long hostlong);
-#endif
-#ifndef htons
-extern unsigned short htons(unsigned short hostshort);
-#endif
-#ifndef ntohl
-extern unsigned long ntohl(unsigned long netlong);
-#endif
-#ifndef ntohs
-extern unsigned short ntohs(unsigned short netshort);
-#endif
-#endif
-
 
 //============================================================================
 //
@@ -243,49 +255,21 @@ void NET_Init(void);
 void NET_Shutdown(void);
 
 struct qsocket_s* NET_CheckNewConnections(void);
-// returns a new connection number if there is one pending, else -1
 
 struct qsocket_s* NET_Connect(char* host);
-// called by client to connect to a host.  Returns -1 if not able to
 
 qboolean NET_CanSendMessage(qsocket_t* sock);
-// Returns true or false if the given qsocket can currently accept a
-// message to be transmitted.
 
 int NET_GetMessage(struct qsocket_s* sock);
-// returns data in net_message sizebuf
-// returns 0 if no data is waiting
-// returns 1 if a message was received
-// returns 2 if an unreliable message was received
-// returns -1 if the connection died
 
 int NET_SendMessage(struct qsocket_s* sock, sizebuf_t* data);
 int NET_SendUnreliableMessage(struct qsocket_s* sock, sizebuf_t* data);
-// returns 0 if the message connot be delivered reliably, but the connection
-//		is still considered valid
-// returns 1 if the message was sent properly
-// returns -1 if the connection died
 
 int NET_SendToAll(sizebuf_t* data, int blocktime);
-// This is a reliable *blocking* send to all attached clients.
 
 void NET_Close(struct qsocket_s* sock);
-// if a dead connection is returned by a get or send function, this function
-// should be called when it is convenient
-
-// Server calls when a client is kicked off for a game related misbehavior
-// like an illegal protocal conversation.  Client calls when disconnecting
-// from a server.
-// A netcon_t number will not be reused until this function is called for it
 
 void NET_Poll(void);
-
-typedef struct _PollProcedure {
-    struct _PollProcedure* next;
-    double nextTime;
-    void (*procedure)();
-    void* arg;
-} PollProcedure;
 
 void SchedulePollProcedure(PollProcedure* pp, double timeOffset);
 

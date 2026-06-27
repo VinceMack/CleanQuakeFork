@@ -4,6 +4,10 @@
 #include "quakedef.hpp"
 #include "d_local.hpp"
 
+namespace Vid {
+
+viddef_t vid;
+
 unsigned short d_8to16table[256];
 
 #include "winquake.hpp"
@@ -254,12 +258,16 @@ void D_EndDirectRect(int x, int y, int width, int height)
     VID_Present();
 }
 
+} // namespace Vid
+
+namespace Common {
+
 /*
 ================
 Sys_SendKeyEvents
 ================
 */
-void Common::Sys_SendKeyEvents(void)
+void Sys_SendKeyEvents(void)
 {
     SDL_Event event;
     int sym, state;
@@ -463,6 +471,10 @@ void Common::Sys_SendKeyEvents(void)
     }
 }
 
+} // namespace Common
+
+namespace Input {
+
 void IN_Init(void)
 {
     if (COM_CheckParm("-nomouse")) {
@@ -542,7 +554,9 @@ void IN_Move(usercmd_t* cmd)
     mouse_x = mouse_y = 0.0;
 }
 
-char* Common::Sys_ConsoleInput(void)
+} // namespace Input
+
+char* ::Common::Sys_ConsoleInput(void)
 {
     return 0;
 }

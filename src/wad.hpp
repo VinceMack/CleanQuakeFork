@@ -1,4 +1,5 @@
 // wad.h -- WAD file format structures
+#pragma once
 
 //===============
 //   TYPES
@@ -38,6 +39,8 @@ typedef struct {
     char name[16]; // must be null terminated
 } lumpinfo_t;
 
+namespace Wad {
+
 extern int wad_numlumps;
 extern lumpinfo_t* wad_lumps;
 extern byte* wad_base;
@@ -48,3 +51,7 @@ lumpinfo_t* W_GetLumpinfo(char* name);
 void* W_GetLumpName(char* name);
 
 void SwapPic(qpic_t* pic);
+
+} // namespace Wad
+
+using namespace Wad;

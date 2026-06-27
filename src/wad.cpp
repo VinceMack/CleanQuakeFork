@@ -2,6 +2,8 @@
 
 #include "quakedef.hpp"
 
+namespace Wad {
+
 int wad_numlumps;
 lumpinfo_t* wad_lumps;
 byte* wad_base;
@@ -123,3 +125,5 @@ void SwapPic(qpic_t* pic)
     pic->width = LittleLong(pic->width);
     pic->height = LittleLong(pic->height);
 }
+
+} // namespace Wad

@@ -1,4 +1,5 @@
 // sound.h -- client sound i/o functions
+#pragma once
 
 #ifndef __SOUND__
 #define __SOUND__

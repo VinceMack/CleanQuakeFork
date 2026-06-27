@@ -1,4 +1,5 @@
 // net_vcr.h -- VCR network driver declarations
+#pragma once
 
 #define VCR_OP_CONNECT 1
 #define VCR_OP_GETMESSAGE 2

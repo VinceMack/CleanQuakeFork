@@ -1,4 +1,5 @@
 // net_loop.h -- loopback network driver declarations
+#pragma once
 
 int Loop_Init(void);
 void Loop_Listen(qboolean state);

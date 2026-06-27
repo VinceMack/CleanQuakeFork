@@ -1,4 +1,5 @@
 // winquake.h: Win32-specific Quake header file
+#pragma once
 
 #pragma warning(disable : 4229) // mgraph gets this
 

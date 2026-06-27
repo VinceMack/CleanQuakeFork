@@ -2,10 +2,14 @@
 
 #include "quakedef.hpp"
 
-
+namespace Vid {
 
 void (*vid_menudrawfn)(void);
 void (*vid_menukeyfn)(int key);
+
+} // namespace Vid
+
+namespace Menu {
 
 enum {
     m_none,
@@ -3233,3 +3237,5 @@ void M_ConfigureNetSubsystem(void)
         net_hostport = lanConfig_port;
     }
 }
+
+} // namespace Menu

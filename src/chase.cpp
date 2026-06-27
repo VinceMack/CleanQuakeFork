@@ -2,6 +2,8 @@
 
 #include "quakedef.hpp"
 
+namespace Client {
+
 cvar_t chase_back = { "chase_back", "100" };
 cvar_t chase_up = { "chase_up", "16" };
 cvar_t chase_right = { "chase_right", "0" };
@@ -63,3 +65,5 @@ void Chase_Update(void)
     // move towards destination
     VectorCopy(chase_dest, r_refdef.vieworg);
 }
+
+} // namespace Client

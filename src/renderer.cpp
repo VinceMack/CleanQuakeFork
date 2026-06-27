@@ -4,6 +4,8 @@
 #include "r_local.hpp"
 #include "d_local.hpp"
 
+namespace Render {
+
 namespace {
     int r_bmodelactive;
     mnode_t* r_pefragtopnode;
@@ -5866,8 +5868,6 @@ cvar_t r_drawflat = { "r_drawflat", "0" };
 cvar_t r_aliastransbase = { "r_aliastransbase", "200" };
 cvar_t r_aliastransadj = { "r_aliastransadj", "100" };
 
-extern cvar_t scr_fov;
-
 void CreatePassages(void);
 void SetVisibilityByPassages(void);
 
@@ -5882,7 +5882,7 @@ void R_InitTextures(void)
     byte* dest;
 
     // create a simple checkerboard texture for the default
-    r_notexture_mip = (texture_s *) Hunk_Alloc(
+    r_notexture_mip = (texture_t*) Hunk_Alloc(
         sizeof(texture_t) + 16 * 16 + 8 * 8 + 4 * 4 + 2 * 2, "notexture");
 
     r_notexture_mip->width = r_notexture_mip->height = 16;
@@ -6748,4 +6748,6 @@ void R_InitTurb(void)
         intsintable[i] = AMP2 + sin(i * 3.14159 * 2 / CYCLE) * AMP2; // AMP2, not 20
     }
 }
+
+} // namespace Render
 

@@ -1,4 +1,5 @@
 // spritegn.h -- sprite file format structures
+#pragma once
 
 // **********************************************************
 // * This file must be identical in the spritegen directory *

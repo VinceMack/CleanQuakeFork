@@ -1,4 +1,5 @@
 // bspfile.h -- BSP map file format structures and constants
+#pragma once
 
 #define MAX_MAP_HULLS 4
 

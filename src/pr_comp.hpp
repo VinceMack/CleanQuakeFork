@@ -1,4 +1,5 @@
 // pr_comp.h -- shared definitions for QuakeC compiler and engine
+#pragma once
 
 typedef int func_t;
 typedef int string_t;

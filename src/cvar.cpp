@@ -2,6 +2,8 @@
 
 #include "quakedef.hpp"
 
+namespace Cvar {
+
 cvar_t* cvar_vars;
 char* cvar_null_string = "";
 
@@ -211,3 +213,5 @@ void Cvar_WriteVariables(FILE* f)
         }
     }
 }
+
+} // namespace Cvar

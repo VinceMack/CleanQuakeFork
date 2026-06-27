@@ -2,6 +2,11 @@
 
 #include "quakedef.hpp"
 
+cvar_t registered = { "registered", "0" };
+cvar_t cmdline = { "cmdline", "0", false, true };
+
+namespace Common {
+
 #define NUM_SAFE_ARGVS 7
 
 static char* largv[MAX_NUM_ARGVS + NUM_SAFE_ARGVS + 1];
@@ -10,9 +15,6 @@ static char* argvdummy = " ";
 static char* safeargvs[NUM_SAFE_ARGVS] = { "-stdvid", "-nolan", "-nosound",
     "-nocdaudio", "-nojoy", "-nomouse",
     "-dibonly" };
-
-cvar_t registered = { "registered", "0" };
-cvar_t cmdline = { "cmdline", "0", false, true };
 
 qboolean com_modified; // set true if using non-id files
 
@@ -1688,3 +1690,5 @@ void COM_InitFilesystem(void)
         proghack = true;
     }
 }
+
+} // namespace Common

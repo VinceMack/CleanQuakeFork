@@ -1,4 +1,5 @@
 // sys.h -- non-portable functions
+#pragma once
 
 namespace Common {
 

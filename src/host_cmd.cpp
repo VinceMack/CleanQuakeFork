@@ -2,19 +2,17 @@
 
 #include "quakedef.hpp"
 
+namespace Host {
+
 extern cvar_t pausable;
 
 int current_skill;
-
-void Mod_Print(void);
 
 /*
 ==================
 Host_Quit_f
 ==================
 */
-
-extern void M_Menu_Quit_f(void);
 
 void Host_Quit_f(void)
 {
@@ -1638,3 +1636,5 @@ void Host_InitCommands(void)
 
     Cmd_AddCommand("mcache", Mod_Print);
 }
+
+} // namespace Host

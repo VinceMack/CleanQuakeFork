@@ -1,4 +1,5 @@
 // net_dgrm.h -- datagram network driver declarations
+#pragma once
 
 int Datagram_Init(void);
 void Datagram_Listen(qboolean state);

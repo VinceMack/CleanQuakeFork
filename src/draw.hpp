@@ -1,7 +1,10 @@
 // draw.h -- these are the only functions outside the refresh allowed
+#pragma once
 // to touch the vid buffer
 
-extern qpic_t* draw_disc; // also used on sbar
+namespace Draw {
+
+extern qpic_t* draw_disc;
 
 void Draw_Init(void);
 void Draw_Character(int x, int y, int num);
@@ -20,3 +23,7 @@ inline qpic_t* Draw_PicFromWad(char* name)
     return (qpic_t*)W_GetLumpName(name);
 }
 qpic_t* Draw_CachePic(char* path);
+
+} // namespace Draw
+
+using namespace Draw;

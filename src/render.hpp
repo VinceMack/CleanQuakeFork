@@ -1,4 +1,5 @@
 // render.h -- public interface to refresh functions
+#pragma once
 
 #define MAXCLIPPLANES 11
 
@@ -76,6 +77,10 @@ typedef struct {
     int ambientlight;
 } refdef_t;
 
+struct texture_s;
+
+namespace Render {
+
 //
 // refresh
 //
@@ -88,10 +93,9 @@ extern struct texture_s* r_notexture_mip;
 void R_Init(void);
 void R_InitTextures(void);
 void R_InitEfrags(void);
-void R_RenderView(void); // must set r_refdef first
+void R_RenderView(void);
 void R_ViewChanged(vrect_t* pvrect, int lineadj, float aspect);
-// called whenever r_refdef or vid change
-void R_InitSky(struct texture_s* mt); // called at level load
+void R_InitSky(struct texture_s* mt);
 
 void R_AddEfrags(entity_t* ent);
 void R_RemoveEfrags(entity_t* ent);
@@ -114,11 +118,15 @@ void R_PushDlights(void);
 //
 // surface cache related
 //
-extern int reinit_surfcache;    // if 1, surface cache is currently empty and
-extern qboolean r_cache_thrash; // set if thrashing the surface cache
+extern int reinit_surfcache;
+extern qboolean r_cache_thrash;
 
 int D_SurfaceCacheForRes(int width, int height);
 void D_FlushCaches(void);
 void D_DeleteSurfaceCache(void);
 void D_InitCaches(void* buffer, int size);
 void R_SetVrect(vrect_t* pvrect, vrect_t* pvrectin, int lineadj);
+
+} // namespace Render
+
+using namespace Render;

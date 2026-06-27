@@ -2,6 +2,8 @@
 
 #include "quakedef.hpp"
 
+namespace Cmd {
+
 void Cmd_ForwardToServer(void);
 
 #define MAX_ALIAS_NAME 32
@@ -656,3 +658,5 @@ void Cmd_ForwardToServer(void)
         SZ_Print(&cls.message, "\n");
     }
 }
+
+} // namespace Cmd

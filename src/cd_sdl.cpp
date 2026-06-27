@@ -11,8 +11,6 @@ static qboolean playLooping = false;
 static float cdvolume = 1.0;
 static int current_track = 0;
 
-static void CD_f();
-
 static void CDAudio_Eject()
 {
     if (!enabled) {
@@ -22,6 +20,8 @@ static void CDAudio_Eject()
     // CD-ROM support removed in SDL 2
     Con_DPrintf("CD-ROM support is not available in SDL 2.\n");
 }
+
+namespace CDAudio {
 
 void CDAudio_Play(byte track, qboolean looping)
 {
@@ -90,30 +90,6 @@ void CDAudio_Update()
 
         return;
     }
-}
-
-int CDAudio_Init()
-{
-    if ((cls.state == ca_dedicated) || COM_CheckParm("-nocdaudio")) {
-        return -1;
-    }
-
-    // SDL 2 removed CD-ROM support
-    // Initialize as disabled but successful
-    initialized = true;
-    enabled = false;
-    cdValid = false;
-
-    Cmd_AddCommand("cd", CD_f);
-    Con_Printf("CD Audio Initialized (SDL 2 - no CD-ROM support).\n");
-
-    return 0;
-}
-
-void CDAudio_Shutdown()
-{
-    CDAudio_Stop();
-    initialized = false;
 }
 
 static void CD_f()
@@ -186,3 +162,29 @@ static void CD_f()
         return;
     }
 }
+
+int CDAudio_Init()
+{
+    if ((cls.state == ca_dedicated) || COM_CheckParm("-nocdaudio")) {
+        return -1;
+    }
+
+    // SDL 2 removed CD-ROM support
+    // Initialize as disabled but successful
+    initialized = true;
+    enabled = false;
+    cdValid = false;
+
+    Cmd_AddCommand("cd", CD_f);
+    Con_Printf("CD Audio Initialized (SDL 2 - no CD-ROM support).\n");
+
+    return 0;
+}
+
+void CDAudio_Shutdown()
+{
+    CDAudio_Stop();
+    initialized = false;
+}
+
+} // namespace CDAudio

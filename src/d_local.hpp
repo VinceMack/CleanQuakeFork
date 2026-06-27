@@ -1,4 +1,5 @@
 // d_local.h:  private rasterization driver defs
+#pragma once
 
 #include "r_shared.hpp"
 
@@ -24,7 +25,7 @@ typedef struct surfcache_s {
     unsigned width;
     unsigned height; // DEBUG only needed for debug
     float mipscale;
-    struct texture_s* texture; // checked for animating textures
+    texture_t* texture; // checked for animating textures
     byte data[4];              // width*height elements
 } surfcache_t;
 
@@ -34,6 +35,8 @@ typedef struct sspan_s {
 } sspan_t;
 
 
+
+namespace Render {
 
 void D_DrawSpans8(espan_t* pspans);
 void D_DrawSpans16(espan_t* pspans);
@@ -48,3 +51,7 @@ void R_ShowSubDiv(void);
 surfcache_t* D_CacheSurface(msurface_t* surface, int miplevel);
 
 extern short* d_pzbuffer;
+
+} // namespace Render
+
+using namespace Render;

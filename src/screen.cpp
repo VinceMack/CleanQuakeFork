@@ -3,6 +3,8 @@
 #include "quakedef.hpp"
 #include "r_local.hpp"
 
+namespace Screen {
+
 // only the refresh window will be updated unless these variables are flagged
 int scr_copytop;
 int scr_copyeverything;
@@ -30,8 +32,6 @@ int scr_fullupdate;
 
 int clearconsole;
 int clearnotify;
-
-viddef_t vid; // global video state
 
 static vrect_t* pconupdate;
 vrect_t scr_vrect;
@@ -932,3 +932,5 @@ void SCR_UpdateScreen(void)
         VID_Update(&vrect);
     }
 }
+
+} // namespace Screen

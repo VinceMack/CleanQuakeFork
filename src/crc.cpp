@@ -42,6 +42,8 @@ static unsigned short crctable[256] = {
     0x2e93, 0x3eb2, 0x0ed1, 0x1ef0
 };
 
+namespace Common {
+
 void CRC_Init(unsigned short* crcvalue)
 {
     *crcvalue = CRC_INIT_VALUE;
@@ -56,3 +58,5 @@ unsigned short CRC_Value(unsigned short crcvalue)
 {
     return crcvalue ^ CRC_XOR_VALUE;
 }
+
+} // namespace Common

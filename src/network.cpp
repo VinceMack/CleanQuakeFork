@@ -32,12 +32,6 @@ typedef int socklen_t;
 #define VCR_OP_CANSENDMESSAGE 4
 #define VCR_MAX_MESSAGE 4
 
-// Variables shared with menu.cpp (menu state tracking)
-extern int m_return_state;
-extern int m_state;
-extern qboolean m_return_onerror;
-extern char m_return_reason[32];
-
 // VCR recording — accessed from host.cpp and sys_sdl.cpp via extern
 int vcrFile = -1;
 qboolean recording = false;

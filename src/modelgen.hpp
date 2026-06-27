@@ -1,4 +1,5 @@
 // modelgen.h -- alias model file format structures
+#pragma once
 
 // *********************************************************
 // * This file must be identical in the modelgen directory *

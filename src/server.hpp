@@ -1,4 +1,5 @@
 // server.h -- server state and entity management structures
+#pragma once
 
 typedef struct {
     int maxclients;
@@ -145,14 +146,14 @@ typedef struct client_s {
 
 //============================================================================
 
+namespace Server {
+
 extern cvar_t teamplay;
 extern cvar_t skill;
 extern cvar_t deathmatch;
 extern cvar_t coop;
 extern cvar_t fraglimit;
 extern cvar_t timelimit;
-
-namespace Server {
 
 extern cvar_t sv_gravity;
 
@@ -205,9 +206,3 @@ void SV_SpawnServer(char* server);
 } // namespace Server
 
 using namespace Server;
-
-extern client_t* host_client;
-
-extern jmp_buf host_abortserver;
-
-extern double host_time;

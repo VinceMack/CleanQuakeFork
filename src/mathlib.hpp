@@ -1,4 +1,5 @@
 // mathlib.h -- 3D math primitives (vectors, matrices, fixed-point)
+#pragma once
 
 typedef float vec_t;
 typedef vec_t vec3_t[3];
@@ -13,9 +14,6 @@ typedef int fixed16_t;
 #endif
 
 struct mplane_s;
-
-extern vec3_t vec3_origin;
-extern int nanmask;
 
 #define IS_NAN(x) (((*(int*)&x) & nanmask) == nanmask)
 
@@ -39,8 +37,12 @@ extern int nanmask;
         b[2] = a[2];     \
     }
 
-void VectorMA(vec3_t veca, float scale, vec3_t vecb, vec3_t vecc);
+namespace Math {
 
+extern vec3_t vec3_origin;
+extern int nanmask;
+
+void VectorMA(vec3_t veca, float scale, vec3_t vecb, vec3_t vecc);
 
 vec_t Length(vec3_t v);
 void CrossProduct(vec3_t v1, vec3_t v2, vec3_t cross);
@@ -57,6 +59,10 @@ int GreatestCommonDivisor(int i1, int i2);
 void AngleVectors(vec3_t angles, vec3_t forward, vec3_t right, vec3_t up);
 int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, struct mplane_s* plane);
 float anglemod(float a);
+
+} // namespace Math
+
+using namespace Math;
 
 #define BOX_ON_PLANE_SIDE(emins, emaxs, p)                                    \
     (((p)->type < 3) ? (((p)->dist <= (emins)[(p)->type])                     \

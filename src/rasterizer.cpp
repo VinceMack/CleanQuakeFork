@@ -7,6 +7,8 @@
 #include "d_local.hpp"
 #include "r_local.hpp"
 
+namespace Render {
+
 // ==============================================================
 // Global variables (TU-local via anonymous namespace)
 // ==============================================================
@@ -2308,3 +2310,5 @@ void D_DrawParticle(particle_t* pparticle)
         break;
     }
 }
+
+} // namespace Render

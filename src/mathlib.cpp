@@ -3,6 +3,8 @@
 #include <math.h>
 #include "quakedef.hpp"
 
+namespace Math {
+
 vec3_t vec3_origin = { 0, 0, 0 };
 int nanmask = 255 << 23;
 
@@ -135,8 +137,6 @@ void CrossProduct(vec3_t v1, vec3_t v2, vec3_t cross)
     cross[2] = v1[0] * v2[1] - v1[1] * v2[0];
 }
 
-double sqrt(double x);
-
 vec_t Length(vec3_t v)
 {
     int i;
@@ -146,7 +146,7 @@ vec_t Length(vec3_t v)
     for (i = 0; i < 3; i++) {
         length += v[i] * v[i];
     }
-    length = sqrt(length); // FIXME
+    length = ::sqrt(length); // FIXME
 
     return length;
 }
@@ -156,7 +156,7 @@ float VectorNormalize(vec3_t v)
     float length, ilength;
 
     length = v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
-    length = sqrt(length); // FIXME
+    length = ::sqrt(length); // FIXME
 
     if (length) {
         ilength = 1 / length;
@@ -278,3 +278,5 @@ int GreatestCommonDivisor(int i1, int i2)
         return GreatestCommonDivisor(i1, i2 % i1);
     }
 }
+
+} // namespace Math

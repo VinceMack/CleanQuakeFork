@@ -3,6 +3,8 @@
 #include "quakedef.hpp"
 #include "r_local.hpp"
 
+namespace View {
+
 /*
 
 The view is allowed to move slightly from it's true position for bobbing,
@@ -827,8 +829,6 @@ The player's clipping box goes from (-16 -16 -24) to (16 16 32) from
 the entity origin, so any view position inside that will be valid
 ==================
 */
-extern vrect_t scr_vrect;
-
 void V_RenderView(void)
 {
     if (con_forcedup) {
@@ -942,3 +942,5 @@ void V_Init(void)
     BuildGammaTable(1.0); // no gamma yet
     Cvar_RegisterVariable(&v_gamma);
 }
+
+} // namespace View

@@ -1,4 +1,5 @@
 // common.h -- general type definitions and common macros
+#pragma once
 
 #include <stdint.h>
 
@@ -19,20 +20,11 @@ typedef struct sizebuf_s {
     int cursize;
 } sizebuf_t;
 
-void SZ_Alloc(sizebuf_t* buf, int startsize);
-void SZ_Clear(sizebuf_t* buf);
-void* SZ_GetSpace(sizebuf_t* buf, int length);
-void SZ_Print(sizebuf_t* buf, char* data); // strcats onto the sizebuf
-
 //============================================================================
 
 typedef struct link_s {
     struct link_s *prev, *next;
 } link_t;
-
-void ClearLink(link_t* l);
-void RemoveLink(link_t* l);
-void InsertLinkBefore(link_t* l, link_t* before);
 
 // (type *)STRUCT_FROM_LINK(link_t *link, type, member)
 // ent = STRUCT_FROM_LINK(link,entity_t,order)
@@ -58,6 +50,19 @@ void InsertLinkBefore(link_t* l, link_t* before);
 #define Q_MINFLOAT ((int)0x7fffffff)
 
 //============================================================================
+
+struct cache_user_s;
+
+namespace Common {
+
+void ClearLink(link_t* l);
+void RemoveLink(link_t* l);
+void InsertLinkBefore(link_t* l, link_t* before);
+
+void SZ_Alloc(sizebuf_t* buf, int startsize);
+void SZ_Clear(sizebuf_t* buf);
+void* SZ_GetSpace(sizebuf_t* buf, int length);
+void SZ_Print(sizebuf_t* buf, char* data);
 
 extern qboolean bigendien;
 
@@ -87,7 +92,7 @@ inline void MSG_WriteAngle(sizebuf_t* sb, float f)
 }
 
 extern int msg_readcount;
-extern qboolean msg_badread; // set if a read goes beyond end of message
+extern qboolean msg_badread;
 
 void MSG_BeginReading(void);
 int MSG_ReadChar(void);
@@ -160,12 +165,10 @@ void COM_FileBase(char* in, char* out);
 void COM_DefaultExtension(char* path, char* extension);
 
 char* va(char* format, ...);
-// does a varargs printf into a temp buffer
 
 //============================================================================
 
 extern int com_filesize;
-struct cache_user_s;
 
 extern char com_gamedir[MAX_OSPATH];
 
@@ -190,8 +193,14 @@ inline byte* COM_LoadHunkFile(char* path)
 {
     return COM_LoadFile(path, 1);
 }
-void COM_LoadCacheFile(char* path, struct cache_user_s* cu);
-
-extern struct cvar_s registered;
+void COM_LoadCacheFile(char* path, cache_user_s* cu);
 
 extern qboolean standard_quake, rogue, hipnotic;
+extern qboolean msg_suppress_1;
+
+} // namespace Common
+
+struct cvar_s;
+extern struct cvar_s registered;
+
+using namespace Common;

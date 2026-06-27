@@ -1,4 +1,5 @@
 // zone.h -- memory allocation (hunk and cache) management
+#pragma once
 
 /*
  memory allocation

@@ -7,13 +7,18 @@ extern cvar_t sv_aim;
 void PF_changeyaw(void);
 }
 
-extern float scr_centertime_off;
-
 namespace Server {
 
 //============================================================================
 // Global variable definitions
 //============================================================================
+
+cvar_t teamplay = { "teamplay", "0", false, true };
+cvar_t skill = { "skill", "1" };
+cvar_t deathmatch = { "deathmatch", "0" };
+cvar_t coop = { "coop", "0" };
+cvar_t fraglimit = { "fraglimit", "0", false, true };
+cvar_t timelimit = { "timelimit", "0", false, true };
 
 // from sv_main.cpp
 server_t sv;
@@ -1073,7 +1078,7 @@ void SV_SpawnServer(char* server)
         Cvar_Set("hostname", "UNNAMED");
     }
 
-    ::scr_centertime_off = 0;
+    Screen::scr_centertime_off = 0;
 
     Con_DPrintf("SpawnServer: %s\n", server);
     svs.changelevel_issued = false; // now safe to issue another

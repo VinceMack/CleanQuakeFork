@@ -1,4 +1,11 @@
 // screen.h -- screen update and console display declarations
+#pragma once
+
+namespace Screen {
+
+extern vrect_t scr_vrect;
+extern cvar_t scr_fov;
+extern float scr_centertime_off;
 
 void SCR_Init(void);
 
@@ -14,22 +21,22 @@ void SCR_EndLoadingPlaque(void);
 int SCR_ModalMessage(char* text);
 
 extern float scr_con_current;
-extern float scr_conlines; // lines of console to display
+extern float scr_conlines;
 
-extern int scr_fullupdate; // set to 0 to force full redraw
-extern int sb_lines;
+extern int scr_fullupdate;
 
-extern int clearnotify; // set to 0 whenever notify text is drawn
+extern int clearnotify;
 extern qboolean scr_disabled_for_loading;
 extern qboolean scr_skipupdate;
 
 extern cvar_t scr_viewsize;
 
-extern cvar_t scr_viewsize;
-
-// only the refresh window will be updated unless these variables are flagged
 extern int scr_copytop;
 extern int scr_copyeverything;
 
 extern qboolean block_drawing;
+
+} // namespace Screen
+
+using namespace Screen;
 

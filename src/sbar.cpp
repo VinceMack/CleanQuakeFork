@@ -2,6 +2,10 @@
 
 #include "quakedef.hpp"
 
+int sb_lines; // scan lines to draw
+
+namespace Sbar {
+
 int sb_updates; // if >= vid.numpages, no update needed
 
 #define STAT_MINUS 10 // num frame for '-' stats digit
@@ -25,8 +29,6 @@ qpic_t* sb_face_invuln;
 qpic_t* sb_face_invis_invuln;
 
 qboolean sb_showscores;
-
-int sb_lines; // scan lines to draw
 
 qpic_t* rsb_invbar[2];
 qpic_t* rsb_weapons[5];
@@ -1184,3 +1186,5 @@ void Sbar_FinaleOverlay(void)
     pic = Draw_CachePic("gfx/finale.lmp");
     Draw_TransPic((vid.width - pic->width) / 2, 16, pic);
 }
+
+} // namespace Sbar

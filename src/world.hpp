@@ -1,4 +1,5 @@
 // world.h -- collision detection structures (trace, plane, hull)
+#pragma once
 
 typedef struct {
     vec3_t normal;

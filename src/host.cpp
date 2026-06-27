@@ -3,16 +3,9 @@
 #include "quakedef.hpp"
 #include "r_local.hpp"
 
-/*
+extern int vcrFile;
 
-A server can allways be started, even if the system started out as a client
-to a remote system.
-
-A client can NOT be started if the system started as a dedicated server.
-
-Memory is cleared / released when a server or client begins, not when they end.
-
-*/
+namespace Host {
 
 quakeparms_t host_parms;
 
@@ -41,18 +34,10 @@ cvar_t host_speeds = { "host_speeds", "0" };       // set for running times
 cvar_t sys_ticrate = { "sys_ticrate", "0.05" };
 cvar_t serverprofile = { "serverprofile", "0" };
 
-cvar_t fraglimit = { "fraglimit", "0", false, true };
-cvar_t timelimit = { "timelimit", "0", false, true };
-cvar_t teamplay = { "teamplay", "0", false, true };
-
 cvar_t samelevel = { "samelevel", "0" };
 cvar_t noexit = { "noexit", "0", false, true };
 
 cvar_t developer = { "developer", "0" };
-
-cvar_t skill = { "skill", "1" };           // 0 - 3
-cvar_t deathmatch = { "deathmatch", "0" }; // 0, 1, or 2
-cvar_t coop = { "coop", "0" };             // 0 or 1
 
 cvar_t pausable = { "pausable", "1" };
 
@@ -250,6 +235,12 @@ void Host_WriteConfiguration(void)
     }
 }
 
+} // namespace Host
+
+//============================================================================
+
+namespace Server {
+
 /*
 =================
 SV_ClientPrintf
@@ -258,7 +249,7 @@ Sends text across to be displayed
 FIXME: make this just a stuffed echo?
 =================
 */
-void Server::SV_ClientPrintf(char* fmt, ...)
+void SV_ClientPrintf(char* fmt, ...)
 {
     va_list argptr;
     char string[1024];
@@ -278,7 +269,7 @@ SV_BroadcastPrintf
 Sends text to all active clients
 =================
 */
-void Server::SV_BroadcastPrintf(char* fmt, ...)
+void SV_BroadcastPrintf(char* fmt, ...)
 {
     va_list argptr;
     char string[1024];
@@ -296,25 +287,7 @@ void Server::SV_BroadcastPrintf(char* fmt, ...)
     }
 }
 
-/*
-=================
-Host_ClientCommands
 
-Send text over to the client to be executed
-=================
-*/
-void Host_ClientCommands(char* fmt, ...)
-{
-    va_list argptr;
-    char string[1024];
-
-    va_start(argptr, fmt);
-    vsprintf(string, fmt, argptr);
-    va_end(argptr);
-
-    MSG_WriteByte(&host_client->message, svc_stufftext);
-    MSG_WriteString(&host_client->message, string);
-}
 
 /*
 =====================
@@ -324,7 +297,7 @@ Called when the player is getting totally kicked off the host
 if (crash = true), don't bother sending signofs
 =====================
 */
-void Server::SV_DropClient(qboolean crash)
+void SV_DropClient(qboolean crash)
 {
     int saveSelf;
     int i;
@@ -375,6 +348,30 @@ void Server::SV_DropClient(qboolean crash)
         MSG_WriteByte(&client->message, host_client - svs.clients);
         MSG_WriteByte(&client->message, 0);
     }
+}
+
+} // namespace Server
+
+namespace Host {
+
+/*
+=================
+Host_ClientCommands
+
+Send text over to the client to be executed
+=================
+*/
+void Host_ClientCommands(char* fmt, ...)
+{
+    va_list argptr;
+    char string[1024];
+
+    va_start(argptr, fmt);
+    vsprintf(string, fmt, argptr);
+    va_end(argptr);
+
+    MSG_WriteByte(&host_client->message, svc_stufftext);
+    MSG_WriteString(&host_client->message, string);
 }
 
 /*
@@ -758,7 +755,6 @@ void Host_Frame(float time)
 
 //============================================================================
 
-extern int vcrFile;
 #define VCR_SIGNATURE 0x56435231
 
 // "VCR1"
@@ -938,3 +934,5 @@ void Host_Shutdown(void)
         VID_Shutdown();
     }
 }
+
+} // namespace Host

@@ -1,4 +1,5 @@
 // client.h -- client state, connection, and entity structures
+#pragma once
 
 typedef struct {
     vec3_t viewangles;
@@ -105,6 +106,8 @@ typedef struct {
     sizebuf_t message; // writing buffer to send to server
 
 } client_static_t;
+
+namespace Client {
 
 extern client_static_t cls;
 
@@ -290,7 +293,6 @@ void CL_WriteToServer(usercmd_t* cmd);
 void CL_BaseMove(usercmd_t* cmd);
 
 float CL_KeyState(kbutton_t* key);
-char* Key_KeynumToString(int keynum);
 
 //
 // cl_demo.cpp
@@ -310,19 +312,20 @@ void CL_ParseServerMessage(void);
 void CL_NewTranslation(int slot);
 
 //
-// view
-//
-void V_StartPitchDrift(void);
-void V_StopPitchDrift(void);
-
-void V_RenderView(void);
-void V_UpdatePalette(void);
-void V_Register(void);
-void V_ParseDamage(void);
-void V_SetContentsColor(int contents);
-
 //
 // cl_tent
 //
 void CL_InitTEnts(void);
 void CL_SignonReply(void);
+
+//
+// chase
+//
+extern cvar_t chase_active;
+
+void Chase_Init(void);
+void Chase_Update(void);
+
+} // namespace Client
+
+using namespace Client;

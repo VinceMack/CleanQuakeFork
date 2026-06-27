@@ -15,14 +15,15 @@
 
 #include "quakedef.hpp"
 
-qboolean isDedicated;
-
-
 char* basedir = ".";
 char* cachedir = "/tmp";
 
 cvar_t sys_linerefresh = { "sys_linerefresh", "0" }; // set for entity display
+
+namespace Host {
+qboolean isDedicated;
 cvar_t sys_nostdout = { "sys_nostdout", "0" };
+} // namespace Host
 
 namespace Common {
 

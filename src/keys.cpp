@@ -2,20 +2,24 @@
 
 #include "quakedef.hpp"
 
+#define MAXCMDLINE 256
+char key_lines[32][MAXCMDLINE];
+int key_linepos;
+int edit_line = 0;
+int history_line = 0;
+char chat_buffer[32];
+qboolean team_message = false;
+
+namespace Keys {
+
 /*
 
 key up events are sent even if in console mode
 
 */
 
-#define MAXCMDLINE 256
-char key_lines[32][MAXCMDLINE];
-int key_linepos;
 int shift_down = false;
 int key_lastpress;
-
-int edit_line = 0;
-int history_line = 0;
 
 keydest_t key_dest;
 
@@ -255,9 +259,6 @@ void Key_Console(int key)
 }
 
 //============================================================================
-
-char chat_buffer[32];
-qboolean team_message = false;
 
 void Key_Message(int key)
 {
@@ -728,3 +729,5 @@ void Key_Event(int key, qboolean down)
         Sys_Error("Bad key_dest");
     }
 }
+
+} // namespace Keys

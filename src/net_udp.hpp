@@ -1,4 +1,5 @@
 // net_udp.h -- UDP network driver declarations
+#pragma once
 
 int UDP_Init(void);
 void UDP_Shutdown(void);

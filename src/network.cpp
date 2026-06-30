@@ -29,8 +29,6 @@ using namespace Cmd;
 
 #include <cstdint>
 #include <cstddef>
-#include <endian.h>
-#include <fcntl.h>
 
 #ifdef _WIN32
 #include <winsock2.h>
